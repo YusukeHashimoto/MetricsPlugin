@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sample03
+Bundle-SymbolicName: Sample03;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.jdt.core;bundle-version="3.12.1",
+ org.eclipse.jdt.ui;bundle-version="3.12.1",
+ org.eclipse.ui.ide;bundle-version="3.12.1",
+ org.eclipse.core.resources;bundle-version="3.11.0",
+ org.eclipse.ui.editors;bundle-version="3.10.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
