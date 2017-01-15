@@ -177,25 +177,20 @@ public class SampleView extends ViewPart {
 	}
 	
 	private List<String> calc() {
-		// アクティブエディタ（編集中のファイル）の情報を取得する。
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IEditorPart editor = window.getActivePage().getActiveEditor();
 		ITextEditor textEditor = (ITextEditor)editor;
 
-		// エディタ情報をもとに、編集中のファイルが属するプロジェクト情報を取得する。
 		IFileEditorInput editorInput = (IFileEditorInput)textEditor.getEditorInput();
 		IFile file = editorInput.getFile();
 		IProject project = file.getProject();
 
-		// プロジェクトのフルパスに、取得したいファイルのプロジェクトルートからの相対パスを追加して、
-		// ファイル情報を取得する。
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IPath path = project.getFullPath().append("tempFileName");
 		//IFile file  = root.getFile(path);
 		
 		CodeAnalizer ca = new CodeAnalizer();
 		String src = file.getLocationURI().getPath();
-		ca.run(parentDirOf(src));
+		ca.run(parentDirOf(src).substring(1));
 		return ca.getWarnings();
 	}
 	
