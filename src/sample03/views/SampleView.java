@@ -1,10 +1,10 @@
 package sample03.views;
 
 
-import java.net.URI;
 import java.util.List;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeanalizer.CodeAnalizer;
@@ -50,6 +51,7 @@ public class SampleView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 	 
+	private AbstractTextEditor editor;
 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
@@ -148,9 +150,12 @@ public class SampleView extends ViewPart {
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {
+				/*
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 				showMessage("Double-click detected on "+obj.toString());
+				*/
+				editor.selectAndReveal(0, 5);
 			}
 		};
 	}
@@ -180,6 +185,8 @@ public class SampleView extends ViewPart {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		IEditorPart editor = window.getActivePage().getActiveEditor();
 		ITextEditor textEditor = (ITextEditor)editor;
+		
+		this.editor = (AbstractTextEditor)editor;
 
 		IFileEditorInput editorInput = (IFileEditorInput)textEditor.getEditorInput();
 		IFile file = editorInput.getFile();
@@ -190,7 +197,11 @@ public class SampleView extends ViewPart {
 		
 		CodeAnalizer ca = new CodeAnalizer();
 		String src = file.getLocationURI().getPath();
-		ca.run(parentDirOf(src).substring(1));
+		try {
+			ca.run(parentDirOf(src).substring(1));
+		} catch(Exception e) {
+			ca.run(parentDirOf(src));
+		}
 		return ca.getWarnings();
 	}
 	
@@ -202,6 +213,12 @@ public class SampleView extends ViewPart {
 			}
 		}
 		System.err.println("Input URI does not contain '/', it is not directory URI.");
+		return null;
+	}
+
+	@Override
+	public Object getAdapter(Class arg0) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -34,5 +34,24 @@
             file="contexts.xml">
       </contexts>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="sample03.editor.SampleEditor"
+            contributorClass="sample03.editor.SampleEditorContributor"
+            extensions="txt"
+            icon="icons/sample.gif"
+            id="Sample03.editor1"
+            name="SampleEditor">
+      </editor>
+      <editor
+            class="sample03.editor.MyTextEditor"
+            contributorClass="sample03.editor.SampleEditorContributor"
+            extensions="java"
+            icon="icons/sample.gif"
+            id="Sample03.editor2"
+            name="MyTextEditor">
+      </editor>
+   </extension>
 
 </plugin>

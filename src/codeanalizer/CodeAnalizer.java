@@ -9,6 +9,8 @@ import java.util.List;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.*;
 
+import codeanalizer.FileUtil;
+
 public class CodeAnalizer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
 	private static final int THRESHOLD_OF_CYCLOMATIC_CONPLEXITY = 10;
