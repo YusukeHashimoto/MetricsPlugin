@@ -16,7 +16,8 @@ public class CodeAnalizer {
 	private static final int THRESHOLD_OF_CYCLOMATIC_CONPLEXITY = 10;
 	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
 	
-	private List<String> warnings = new ArrayList<>(); //fix later
+	private List<String> messages = new ArrayList<>(); //fix later
+	private List<Warning> warnings = new ArrayList<>();
 
 	public static void main(String args[]) {
 		// new CodeAnalizer().run("res/");
@@ -48,12 +49,13 @@ public class CodeAnalizer {
 		unit.accept(visitor);
 
 		setLineNum(visitor, rawCode);
+		setLineNum2(visitor, rawCode);
 
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
 
 		showWarning(unit, formattedCode);
-		System.out.println(warnings);
+		System.out.println(messages);
 
 		// System.out.println("Cyclomatic complexity: " +
 		// visitor.totalCyclomaticComplexity());
@@ -107,6 +109,20 @@ public class CodeAnalizer {
 					unit.getLineNumber(visitor.getVariableList().get(i).getStartPosition()));
 		}
 	}
+	private void setLineNum2(MyVisitor formattedVisitor, String rawCode) {
+		MyVisitor visitor = new MyVisitor(rawCode);
+		List<MethodDeclaration> methList = formattedVisitor.getMethodList();
+
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setSource(rawCode.toCharArray());
+		CompilationUnit unit = (CompilationUnit) parser.createAST(new NullProgressMonitor());
+		unit.accept(visitor);
+
+		for(int i = 0; i < methList.size(); i++) {
+			methList.get(i).setProperty(MyVisitor.DECLARED_LINE,
+					unit.getLineNumber(visitor.getMethodList().get(i).getStartPosition()));
+		}
+	}
 
 	void showWarning(CompilationUnit unit, String code) {
 		MyVisitor visitor = new MyVisitor(code);
@@ -116,19 +132,22 @@ public class CodeAnalizer {
 				.filter(v -> (v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)
 						&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
 				.sorted(comparing(CodeAnalizer::lifeSpanOf).reversed())
-				.forEach(variable -> warnings.add(variable.getName() + "の寿命が長い(" + lifeSpanOf(variable) + "行)"));
+				//.forEach(variable -> messages.add(variable.getName() + "の寿命が長い(" + lifeSpanOf(variable) + "行)"));
+				.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, lifeSpanOf(node))));
 
 		System.out.println();
 
 		visitor.getMethodList().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
 				.sorted(comparing(CodeAnalizer::lineCountOf).reversed())
-				.forEach(m -> warnings.add(m.getName() + "の行数が長い(" + lineCountOf(m) + "行)"));
+				//.forEach(m -> messages.add(m.getName() + "の行数が長い(" + lineCountOf(m) + "行)"));
+				.forEach(node -> warnings.add(new LargeMethodWarning(unit, node, lineCountOf(node))));
 
 		System.out.println();
 
 		visitor.getMethodList().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
 				.sorted(comparing(CodeAnalizer::cyclomaticComplexityOf).reversed())
-				.forEach(m -> warnings.add(m.getName() + "のサイクロマチック数が大きい(" + cyclomaticComplexityOf(m) + ")"));
+				//.forEach(m -> messages.add(m.getName() + "のサイクロマチック数が大きい(" + cyclomaticComplexityOf(m) + ")"));
+				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, cyclomaticComplexityOf(node))));
 	}
 
 	private static int lineCountOf(MethodDeclaration method) {
@@ -143,7 +162,8 @@ public class CodeAnalizer {
 		return (int) variable.getProperty(MyVisitor.LIFE_SPAN);
 	}
 	
-	public List<String> getWarnings() {
+	public List<Warning> getWarnings() {
 		return warnings;
 	}
+
 }

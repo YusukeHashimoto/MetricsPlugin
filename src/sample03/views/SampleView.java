@@ -1,10 +1,12 @@
 package sample03.views;
 
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.internal.resources.Resource;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -14,11 +16,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.*;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeanalizer.CodeAnalizer;
+import codeanalizer.Warning;
 
 
 /**
@@ -150,19 +154,52 @@ public class SampleView extends ViewPart {
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			public void run() {
-				/*
+				
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				showMessage("Double-click detected on "+obj.toString());
-				*/
-				editor.selectAndReveal(0, 5);
+				//showMessage("Double-click detected on "+obj.toString());
+				
+				int start = 0;
+				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
+					if(obj.toString().equals(viewer.getElementAt(i))) {
+						start = warnings.get(i).getLine();
+					}
+				}
+				//System.out.println(obj);
+				IEditorPart editorPart = editor;
+				IEditorInput editorInput = editor.getEditorInput();
+				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+				
+				Map attributes = new HashMap();
+				attributes.put(IMarker.LINE_NUMBER, new Integer(start));
+				
+				IMarker marker;
+				try {
+					marker = resource.createMarker(IMarker.TEXT);
+					marker.setAttributes(attributes);
+					IDE.gotoMarker(editorPart, marker);
+					marker.delete();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				//editor.selectAndReveal(0, 5);
 			}
 		};
 	}
 
+	private int index = -1;
+	
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
+				System.out.println(event.toString());
+				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
+					System.out.println(viewer.getElementAt(i));
+					if(event.getSource().equals(viewer.getElementAt(i))) 
+						index = i;
+				}
 				doubleClickAction.run();
 			}
 		});
@@ -180,6 +217,8 @@ public class SampleView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+	
+	private List<Warning> warnings;
 	
 	private List<String> calc() {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -202,7 +241,8 @@ public class SampleView extends ViewPart {
 		} catch(Exception e) {
 			ca.run(parentDirOf(src));
 		}
-		return ca.getWarnings();
+		warnings = ca.getWarnings();
+		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
 	
 	private static String parentDirOf(String filePath) {

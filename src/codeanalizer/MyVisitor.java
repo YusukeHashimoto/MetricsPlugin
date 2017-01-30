@@ -9,7 +9,7 @@ public class MyVisitor extends ASTVisitor {
 	private List<MethodDeclaration> methodList;
 	private List<VariableDeclarationFragment> variableList;
 	private List<Block> blockList;
-	static final String LINE_COUNT = "line";
+	static final String LINE_COUNT = "line_count";
 	static final String LIFE_SPAN = "life";
 	static final String DECLARED_LINE = "declared_line";
 	static final String CYCLOMATIC_COMPLEXITY = "mccabe";
