@@ -1,4 +1,4 @@
-package sample03.editor;
+package metricsplugin.editor;
 
 import org.eclipse.ui.editors.text.TextEditor;
 

@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.*;
 
 import codeanalizer.FileUtil;
+import warning.*;
+import kotlinwarning.LargeScopeWarning;
 
 public class CodeAnalizer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
@@ -133,8 +135,10 @@ public class CodeAnalizer {
 						&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
 				.sorted(comparing(CodeAnalizer::lifeSpanOf).reversed())
 				//.forEach(variable -> messages.add(variable.getName() + "の寿命が長い(" + lifeSpanOf(variable) + "行)"));
-				.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, lifeSpanOf(node))));
+				//.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, lifeSpanOf(node))));
+				.forEach(node -> warnings.add(new LargeScopeWarning(unit, node, lifeSpanOf(node))));
 
+		//new KotlinSample().sayHello();
 		System.out.println();
 
 		visitor.getMethodList().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)

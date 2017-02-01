@@ -1,7 +1,9 @@
-package codeanalizer;
+package warning;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+
+import codeanalizer.MyVisitor;
 
 public abstract class Warning {
 	private String filename;

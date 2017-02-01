@@ -11,7 +11,7 @@ public class MyVisitor extends ASTVisitor {
 	private List<Block> blockList;
 	static final String LINE_COUNT = "line_count";
 	static final String LIFE_SPAN = "life";
-	static final String DECLARED_LINE = "declared_line";
+	public static final String DECLARED_LINE = "declared_line";
 	static final String CYCLOMATIC_COMPLEXITY = "mccabe";
 	static final String LOCAL_VARIABLE = "local";
 	static final String DEFINITION_PLACE = "def_place";

@@ -1,8 +1,8 @@
-package codeanalizer;
+package warning;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import codeanalizer.Warning;
+import warning.Warning;
 
 public class LargeMethodWarning extends Warning {
 	private int line;

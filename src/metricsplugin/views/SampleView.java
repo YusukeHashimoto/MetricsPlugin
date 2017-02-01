@@ -1,4 +1,4 @@
-package sample03.views;
+package metricsplugin.views;
 
 
 import java.util.*;
@@ -22,7 +22,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import codeanalizer.CodeAnalizer;
-import codeanalizer.Warning;
+import warning.Warning;
 
 
 /**
@@ -69,7 +69,7 @@ public class SampleView extends ViewPart {
 		}
 	}
 
-/**
+	/**
 	 * The constructor.
 	 */
 	public SampleView() {
@@ -152,58 +152,44 @@ public class SampleView extends ViewPart {
 		action2.setToolTipText("Action 2 tooltip");
 		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		
 		doubleClickAction = new Action() {
 			public void run() {
-				
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 				//showMessage("Double-click detected on "+obj.toString());
 				
-				int start = 0;
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
-						start = warnings.get(i).getLine();
+						markLine(warnings.get(i).getLine());
+						break;
 					}
 				}
-				//System.out.println(obj);
-				IEditorPart editorPart = editor;
-				IEditorInput editorInput = editor.getEditorInput();
-				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
-				
-				Map attributes = new HashMap();
-				attributes.put(IMarker.LINE_NUMBER, new Integer(start));
-				
-				IMarker marker;
-				try {
-					marker = resource.createMarker(IMarker.TEXT);
-					marker.setAttributes(attributes);
-					IDE.gotoMarker(editorPart, marker);
-					marker.delete();
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//editor.selectAndReveal(0, 5);
 			}
 		};
 	}
-
-	private int index = -1;
 	
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				System.out.println(event.toString());
-				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
-					System.out.println(viewer.getElementAt(i));
-					if(event.getSource().equals(viewer.getElementAt(i))) 
-						index = i;
-				}
-				doubleClickAction.run();
-			}
-		});
+	private void markLine(int line) {
+		IEditorInput editorInput = editor.getEditorInput();
+		IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+		
+		Map<String, Integer> attributes = new HashMap<>();
+		attributes.put(IMarker.LINE_NUMBER, new Integer(line));
+		
+		try {
+			IMarker marker = resource.createMarker(IMarker.TEXT);
+			marker.setAttributes(attributes);
+			IDE.gotoMarker(editor, marker);
+			marker.delete();
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
+
+	private void hookDoubleClickAction() {
+		viewer.addDoubleClickListener(e -> doubleClickAction.run());
+	}
+	
 	private void showMessage(String message) {
 		MessageDialog.openInformation(
 			viewer.getControl().getShell(),
@@ -229,36 +215,27 @@ public class SampleView extends ViewPart {
 
 		IFileEditorInput editorInput = (IFileEditorInput)textEditor.getEditorInput();
 		IFile file = editorInput.getFile();
-		IProject project = file.getProject();
 
-		IPath path = project.getFullPath().append("tempFileName");
-		//IFile file  = root.getFile(path);
-		
 		CodeAnalizer ca = new CodeAnalizer();
 		String src = file.getLocationURI().getPath();
+		
 		try {
 			ca.run(parentDirOf(src).substring(1));
 		} catch(Exception e) {
 			ca.run(parentDirOf(src));
 		}
+		
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
 	
 	private static String parentDirOf(String filePath) {
-		//String filePath = file.getLocationURI().toString();
 		for(int i = filePath.length()-1; i > 1; i--) {
 			if(filePath.charAt(i) == '/') {
 				return filePath.substring(0, i+1);
 			}
 		}
 		System.err.println("Input URI does not contain '/', it is not directory URI.");
-		return null;
-	}
-
-	@Override
-	public Object getAdapter(Class arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

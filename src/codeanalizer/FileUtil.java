@@ -19,7 +19,7 @@ public class FileUtil {
 			return null;
 		}
 	}
-
+	
 	static List<String> getSourceCodeList(String pathToPackage) {
 		return Arrays.asList((new File(pathToPackage)).list());
 	}
