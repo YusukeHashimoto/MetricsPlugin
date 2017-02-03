@@ -11,7 +11,6 @@ import org.eclipse.jdt.core.dom.*;
 
 import codeanalizer.FileUtil;
 import warning.*;
-import kotlinwarning.LargeScopeWarning;
 
 public class CodeAnalizer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
