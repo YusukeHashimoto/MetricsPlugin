@@ -15,8 +15,8 @@ public abstract class Warning {
 	public static final int COMPLEX_METHOD = 1;
 	public static final int LONG_LIFE_SPAN = 2;
 	
-	public Warning(CompilationUnit unit, ASTNode node) {
-		filename = unit.toString();
+	public Warning(CompilationUnit unit, ASTNode node, String filename) {
+		this.filename = filename;
 		this.node = node;
 		this.line = (int)node.getProperty(MyVisitor.DECLARED_LINE);
 	}
@@ -31,6 +31,10 @@ public abstract class Warning {
 
 	public String getFilename() {
 		return filename;
+	}
+	
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 	
 	public abstract String getMessage();

@@ -6,8 +6,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 public class ComplexMethodWarning extends Warning {
 	private int cyclomaticComplexity;
 
-	public ComplexMethodWarning(CompilationUnit unit, ASTNode node, int cyclomaticComplexity) {
-		super(unit, node);
+	public ComplexMethodWarning(CompilationUnit unit, ASTNode node, String filename, int cyclomaticComplexity) {
+		super(unit, node, filename);
 		this.cyclomaticComplexity = cyclomaticComplexity;
 	}
 

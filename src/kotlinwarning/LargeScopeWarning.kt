@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.CompilationUnit
 import warning.*
 
-public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, lifeSpan: Int?) : Warning(unit, node) {
+public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename: String?, lifeSpan: Int?) : Warning(unit, node, filename) {
 	val lifeSpan = lifeSpan
 
 	override fun getMessage(): String {

@@ -7,8 +7,8 @@ import warning.Warning;
 public class LargeMethodWarning extends Warning {
 	private int line;
 
-	public LargeMethodWarning(CompilationUnit unit, ASTNode node, int line) {
-		super(unit, node);
+	public LargeMethodWarning(CompilationUnit unit, ASTNode node, String filename, int line) {
+		super(unit, node, filename);
 		this.line = line;
 	}
 	
