@@ -6,8 +6,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 public class LifeSpanWarning extends Warning {
 	private int lifeSpan;
 
-	public LifeSpanWarning(CompilationUnit unit, ASTNode node, int lifeSpan) {
-		super(unit, node);
+	public LifeSpanWarning(CompilationUnit unit, ASTNode node, String filename, int lifeSpan) {
+		super(unit, node, filename);
 		this.lifeSpan = lifeSpan;
 	}
 

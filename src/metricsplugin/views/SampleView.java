@@ -4,10 +4,9 @@ package metricsplugin.views;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.eclipse.core.internal.resources.Resource;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -158,12 +157,27 @@ public class SampleView extends ViewPart {
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 				//showMessage("Double-click detected on "+obj.toString());
-				
+								
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
+						//openInEditor(warnings.get(i).getFilename());
 						markLine(warnings.get(i).getLine());
 						break;
 					}
+				}
+			}
+
+			private void openInEditor(String filename) {
+				//String path = filename.substring(filename.indexOf("src"));
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
+				IWorkbench workbench = PlatformUI.getWorkbench();
+				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+				IWorkbenchPage page = window.getActivePage();
+				try {
+					IDE.openEditor(page, file, true);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		};
@@ -236,6 +250,12 @@ public class SampleView extends ViewPart {
 			}
 		}
 		System.err.println("Input URI does not contain '/', it is not directory URI.");
+		return null;
+	}
+
+	@Override
+	public Object getAdapter(Class arg0) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

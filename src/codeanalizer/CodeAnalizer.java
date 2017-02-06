@@ -55,7 +55,7 @@ public class CodeAnalizer {
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
 
-		showWarning(unit, formattedCode);
+		showWarning(unit, formattedCode, pathToPackage + className);
 		System.out.println(messages);
 
 		// System.out.println("Cyclomatic complexity: " +
@@ -125,7 +125,7 @@ public class CodeAnalizer {
 		}
 	}
 
-	void showWarning(CompilationUnit unit, String code) {
+	void showWarning(CompilationUnit unit, String code, String filename) {
 		MyVisitor visitor = new MyVisitor(code);
 		unit.accept(visitor);
 
@@ -135,7 +135,7 @@ public class CodeAnalizer {
 				.sorted(comparing(CodeAnalizer::lifeSpanOf).reversed())
 				//.forEach(variable -> messages.add(variable.getName() + "の寿命が長い(" + lifeSpanOf(variable) + "行)"));
 				//.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, lifeSpanOf(node))));
-				.forEach(node -> warnings.add(new LargeScopeWarning(unit, node, lifeSpanOf(node))));
+				.forEach(node -> warnings.add(new LargeScopeWarning(unit, node, filename, lifeSpanOf(node))));
 
 		//new KotlinSample().sayHello();
 		System.out.println();
@@ -143,14 +143,14 @@ public class CodeAnalizer {
 		visitor.getMethodList().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
 				.sorted(comparing(CodeAnalizer::lineCountOf).reversed())
 				//.forEach(m -> messages.add(m.getName() + "の行数が長い(" + lineCountOf(m) + "行)"));
-				.forEach(node -> warnings.add(new LargeMethodWarning(unit, node, lineCountOf(node))));
+				.forEach(node -> warnings.add(new LargeMethodWarning(unit, node, filename, lineCountOf(node))));
 
 		System.out.println();
 
 		visitor.getMethodList().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
 				.sorted(comparing(CodeAnalizer::cyclomaticComplexityOf).reversed())
 				//.forEach(m -> messages.add(m.getName() + "のサイクロマチック数が大きい(" + cyclomaticComplexityOf(m) + ")"));
-				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, cyclomaticComplexityOf(node))));
+				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, filename, cyclomaticComplexityOf(node))));
 	}
 
 	private static int lineCountOf(MethodDeclaration method) {

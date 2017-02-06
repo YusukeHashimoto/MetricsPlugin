@@ -39,7 +39,6 @@
       <editor
             class="metricsplugin.editor.SampleEditor"
             contributorClass="metricsplugin.editor.SampleEditorContributor"
-            extensions="txt"
             icon="icons/sample.gif"
             id="Sample03.editor1"
             name="SampleEditor">
@@ -47,7 +46,6 @@
       <editor
             class="metricsplugin.editor.MyTextEditor"
             contributorClass="metricsplugin.editor.SampleEditorContributor"
-            extensions="java"
             icon="icons/sample.gif"
             id="Sample03.editor2"
             name="MyTextEditor">
