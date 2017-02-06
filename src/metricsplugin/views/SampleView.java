@@ -5,8 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -160,7 +159,7 @@ public class SampleView extends ViewPart {
 								
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
-						//openInEditor(warnings.get(i).getFilename());
+						openInEditor(warnings.get(i).getFilename());
 						markLine(warnings.get(i).getLine());
 						break;
 					}
@@ -169,14 +168,20 @@ public class SampleView extends ViewPart {
 
 			private void openInEditor(String filename) {
 				//String path = filename.substring(filename.indexOf("src"));
-				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
+				//IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
+				IFile openedFile = ((IFileEditorInput)editor.getEditorInput()).getFile();
+				IProject project = openedFile.getProject();
+				String p = project.toString().substring(1);
+				
+				String relativePath = filename.substring(filename.indexOf(p));
+				IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(relativePath));
+				
 				try {
-					IDE.openEditor(page, file, true);
+					IDE.openEditor(page, file2, true);
 				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

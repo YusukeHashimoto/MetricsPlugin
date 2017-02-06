@@ -135,7 +135,7 @@ public class CodeAnalizer {
 				.sorted(comparing(CodeAnalizer::lifeSpanOf).reversed())
 				//.forEach(variable -> messages.add(variable.getName() + "の寿命が長い(" + lifeSpanOf(variable) + "行)"));
 				//.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, lifeSpanOf(node))));
-				.forEach(node -> warnings.add(new LargeScopeWarning(unit, node, filename, lifeSpanOf(node))));
+				.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, filename, lifeSpanOf(node))));
 
 		//new KotlinSample().sayHello();
 		System.out.println();
