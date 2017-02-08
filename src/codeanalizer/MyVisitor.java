@@ -107,7 +107,7 @@ public class MyVisitor extends ASTVisitor {
 		cyclomaticComplexity++;
 		incrementCC(parentMethodOf(node));
 		return super.visit(node);
-	}// org.eclipse.jdt.core.dom.
+	}
 
 	@Override
 	public boolean visit(InfixExpression node) {

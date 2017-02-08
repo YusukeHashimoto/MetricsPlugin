@@ -21,6 +21,6 @@ public class FileUtil {
 	}
 	
 	static List<String> getSourceCodeList(String pathToPackage) {
-		return Arrays.asList((new File(pathToPackage)).list());
+		return Arrays.asList((new File(pathToPackage).list())).stream().filter(s -> s.contains(".java")).collect(Collectors.toList());
 	}
 }

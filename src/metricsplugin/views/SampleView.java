@@ -167,42 +167,40 @@ public class SampleView extends ViewPart {
 			}
 
 			private void openInEditor(String filename) {
-				//String path = filename.substring(filename.indexOf("src"));
-				//IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				IFile openedFile = ((IFileEditorInput)editor.getEditorInput()).getFile();
 				IProject project = openedFile.getProject();
-				String p = project.toString().substring(1);
+				String projectName = project.toString().substring(1);
 				
-				String relativePath = filename.substring(filename.indexOf(p));
-				IFile file2 = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(relativePath));
+				String relativePath = filename.substring(filename.indexOf(projectName));
+				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(relativePath));
 				
 				try {
-					IDE.openEditor(page, file2, true);
+					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				}
 			}
+			
+			private void markLine(int line) {
+				IEditorInput editorInput = editor.getEditorInput();
+				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+				
+				Map<String, Integer> attributes = new HashMap<>();
+				attributes.put(IMarker.LINE_NUMBER, new Integer(line));
+				
+				try {
+					IMarker marker = resource.createMarker(IMarker.TEXT);
+					marker.setAttributes(attributes);
+					IDE.gotoMarker(editor, marker);
+					marker.delete();
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+			}
 		};
-	}
-	
-	private void markLine(int line) {
-		IEditorInput editorInput = editor.getEditorInput();
-		IResource resource = (IResource)editorInput.getAdapter(IResource.class);
-		
-		Map<String, Integer> attributes = new HashMap<>();
-		attributes.put(IMarker.LINE_NUMBER, new Integer(line));
-		
-		try {
-			IMarker marker = resource.createMarker(IMarker.TEXT);
-			marker.setAttributes(attributes);
-			IDE.gotoMarker(editor, marker);
-			marker.delete();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void hookDoubleClickAction() {
