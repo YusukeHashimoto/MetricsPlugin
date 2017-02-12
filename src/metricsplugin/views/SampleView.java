@@ -156,6 +156,7 @@ public class SampleView extends ViewPart {
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 				//showMessage("Double-click detected on "+obj.toString());
+				SampleView.this.editor = currentEditor();
 								
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
@@ -258,7 +259,12 @@ public class SampleView extends ViewPart {
 
 	@Override
 	public Object getAdapter(Class arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getAdapter(arg0);
+	}
+	
+	private AbstractTextEditor currentEditor() {
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		IEditorPart editor = window.getActivePage().getActiveEditor();
+		return (AbstractTextEditor)editor;
 	}
 }
