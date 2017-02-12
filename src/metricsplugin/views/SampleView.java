@@ -186,7 +186,7 @@ public class SampleView extends ViewPart {
 			}
 			
 			private void markLine(int line) {
-				IEditorInput editorInput = editor.getEditorInput();
+				IEditorInput editorInput = currentEditor().getEditorInput();
 				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
 				
 				Map<String, Integer> attributes = new HashMap<>();
@@ -195,7 +195,7 @@ public class SampleView extends ViewPart {
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
-					IDE.gotoMarker(editor, marker);
+					IDE.gotoMarker(currentEditor(), marker);
 					marker.delete();
 				} catch (CoreException e) {
 					e.printStackTrace();
