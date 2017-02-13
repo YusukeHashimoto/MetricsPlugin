@@ -53,8 +53,6 @@ public class SampleView extends ViewPart {
 	private Action action2;
 	private Action doubleClickAction;
 	 
-	private AbstractTextEditor editor;
-
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
@@ -155,8 +153,6 @@ public class SampleView extends ViewPart {
 			public void run() {
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				//showMessage("Double-click detected on "+obj.toString());
-				SampleView.this.editor = currentEditor();
 								
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
@@ -171,7 +167,7 @@ public class SampleView extends ViewPart {
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
-				IFile openedFile = ((IFileEditorInput)editor.getEditorInput()).getFile();
+				IFile openedFile = ((IFileEditorInput)currentEditor().getEditorInput()).getFile();
 				IProject project = openedFile.getProject();
 				String projectName = project.toString().substring(1);
 				
@@ -225,13 +221,7 @@ public class SampleView extends ViewPart {
 	private List<Warning> warnings;
 	
 	private List<String> calc() {
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		ITextEditor textEditor = (ITextEditor)editor;
-		
-		this.editor = (AbstractTextEditor)editor;
-
-		IFileEditorInput editorInput = (IFileEditorInput)textEditor.getEditorInput();
+		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
 		IFile file = editorInput.getFile();
 
 		CodeAnalizer ca = new CodeAnalizer();
