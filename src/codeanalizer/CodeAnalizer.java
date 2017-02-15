@@ -3,8 +3,7 @@ package codeanalizer;
 import static java.util.Comparator.comparing;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.*;
@@ -34,9 +33,7 @@ public class CodeAnalizer {
 	}
 
 	public void run(String pathToPackage, String className) {
-		String rawCode = FileUtil.readSourceCode(pathToPackage + className);
-
-		if(rawCode == null) return;
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + className));
 
 		String formattedCode = MyParser.format(rawCode);
 

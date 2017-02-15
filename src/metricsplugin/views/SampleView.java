@@ -5,7 +5,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -17,7 +18,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.ui.texteditor.SaveAction;
 
 import codeanalizer.CodeAnalizer;
 import warning.Warning;
@@ -89,6 +90,9 @@ public class SampleView extends ViewPart {
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+
+		//refresh warnings when code has changed
+		currentEditor().addPropertyListener((source, propId) -> refresh());
 	}
 
 	private void hookContextMenu() {
@@ -151,6 +155,7 @@ public class SampleView extends ViewPart {
 		
 		doubleClickAction = new Action() {
 			public void run() {
+				//refresh();
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 								
@@ -253,8 +258,10 @@ public class SampleView extends ViewPart {
 	}
 	
 	private AbstractTextEditor currentEditor() {
-		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		return (AbstractTextEditor)editor;
+		return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+	}
+	
+	private void refresh() {
+		viewer.setInput(calc());
 	}
 }
