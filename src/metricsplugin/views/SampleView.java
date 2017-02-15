@@ -52,7 +52,7 @@ public class SampleView extends ViewPart {
 	private TableViewer viewer;
 	private Action action1;
 	private Action action2;
-	private Action doubleClickAction;
+	private IAction doubleClickAction;
 	 
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
@@ -80,7 +80,7 @@ public class SampleView extends ViewPart {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
-		viewer.setInput(calc().toArray());
+		viewer.setInput(analyzeCode().toArray());
 		viewer.setLabelProvider(new ViewLabelProvider());
 
 		// Create the help context id for the viewer's control
@@ -154,8 +154,8 @@ public class SampleView extends ViewPart {
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		
 		doubleClickAction = new Action() {
+			@Override
 			public void run() {
-				//refresh();
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
 								
@@ -225,7 +225,7 @@ public class SampleView extends ViewPart {
 	
 	private List<Warning> warnings;
 	
-	private List<String> calc() {
+	private List<String> analyzeCode() {
 		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
 		IFile file = editorInput.getFile();
 
@@ -262,6 +262,6 @@ public class SampleView extends ViewPart {
 	}
 	
 	private void refresh() {
-		viewer.setInput(calc());
+		viewer.setInput(analyzeCode());
 	}
 }
