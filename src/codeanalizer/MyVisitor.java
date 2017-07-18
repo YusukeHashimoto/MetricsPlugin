@@ -32,6 +32,18 @@ public class MyVisitor extends ASTVisitor {
 	public List<Block> getBlockList() {
 		return blockList;
 	}
+	
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+	
+	public List<MethodInvocation> getMethodInvocations() {
+		return methodInvocations;
+	}
+	
+	public String getSuperClass() {
+		return superClass;
+	}
 
 	MyVisitor(String code) {
 		methodList = new ArrayList<>();
@@ -138,12 +150,12 @@ public class MyVisitor extends ASTVisitor {
 		try {
 			if(node.getSuperclassType() != null) {
 				superClass = node.getSuperclassType().toString();
-				System.out.println(superClass);
+				//System.out.println("SuperClass: " + superClass);
 			}
 		} catch(UnsupportedOperationException e) {
 			
 		}
-		if(isAbstract) System.out.println("abst");
+		if(isAbstract) System.out.println("This is abstract class.");
 		
 		return super.visit(node);
 	}
@@ -151,6 +163,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodInvocation node) {
 		methodInvocations.add(node);
+		//System.out.println("\t" + node.toString());
 		return super.visit(node);
 	}
 

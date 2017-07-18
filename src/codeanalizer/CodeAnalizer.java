@@ -9,12 +9,15 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.*;
 
 import codeanalizer.FileUtil;
+import codeanalizer.MyVisitor;
 import warning.*;
 
 public class CodeAnalizer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
 	private static final int THRESHOLD_OF_CYCLOMATIC_CONPLEXITY = 10;
 	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
+	
+	private double abstractness = 0;
 	
 	private List<Warning> warnings = new ArrayList<>();
 
@@ -30,6 +33,7 @@ public class CodeAnalizer {
 			System.out.println("\n" + className + "\n");
 			run(pathToPackage, className);
 		}
+		System.out.println("Abstractness: " + abstractness / classList.size());
 	}
 
 	public void run(String pathToPackage, String className) {
@@ -46,6 +50,13 @@ public class CodeAnalizer {
 
 		setLineNum(visitor, rawCode);
 		setLineNum2(visitor, rawCode);
+		
+		if(visitor.isAbstract()) abstractness++;
+		
+		for(MethodInvocation mi: visitor.getMethodInvocations()) {
+			System.out.println("\t" + mi.toString());
+		}
+		System.out.println("SuperClass: " + visitor.getSuperClass());
 
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
@@ -58,12 +69,12 @@ public class CodeAnalizer {
 		MyVisitor visitor = new MyVisitor(code);
 		unit.accept(visitor);
 		for(MethodDeclaration method : visitor.getMethodList()) {
-			System.out.printf("可視性等  =%s%n", method.modifiers());
-			System.out.printf("戻り型    =%s%n", method.getReturnType2());
-			System.out.printf("メソッド名=%s%n", method.getName().getIdentifier());
-			System.out.printf("引数      =%s%n", method.parameters());
-			// System.out.printf("本体 =%s%n", method.getBody());
-			System.out.printf("行数 =%s%n", method.properties().get(MyVisitor.LINE_COUNT));
+			System.out.printf("蜿ｯ隕匁�ｧ遲�  =%s%n", method.modifiers());
+			System.out.printf("謌ｻ繧雁梛    =%s%n", method.getReturnType2());
+			System.out.printf("繝｡繧ｽ繝�繝牙錐=%s%n", method.getName().getIdentifier());
+			System.out.printf("蠑墓焚      =%s%n", method.parameters());
+			// System.out.printf("譛ｬ菴� =%s%n", method.getBody());
+			System.out.printf("陦梧焚 =%s%n", method.properties().get(MyVisitor.LINE_COUNT));
 			System.out.printf("McCabe=%s%n", method.properties().get(MyVisitor.CYCLOMATIC_COMPLEXITY));
 			System.out.println();
 		}
@@ -73,15 +84,15 @@ public class CodeAnalizer {
 		MyVisitor visitor = new MyVisitor(code);
 		unit.accept(visitor);
 		for(VariableDeclarationFragment variable : visitor.getVariableList()) {
-			System.out.printf("変数名   =%s%n", variable.getName().getIdentifier());
-			System.out.printf("開始行 =%s%n", variable.getProperty(MyVisitor.DECLARED_LINE));
-			System.out.printf("初期化子  =%s%n", variable.getInitializer());
+			System.out.printf("螟画焚蜷�   =%s%n", variable.getName().getIdentifier());
+			System.out.printf("髢句ｧ玖｡� =%s%n", variable.getProperty(MyVisitor.DECLARED_LINE));
+			System.out.printf("蛻晄悄蛹門ｭ�  =%s%n", variable.getInitializer());
 
 			if(variable.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration) {
-				System.out.println("ローカル変数");
-				System.out.printf("寿命=%s%n", variable.getProperty(MyVisitor.LIFE_SPAN));
+				System.out.println("繝ｭ繝ｼ繧ｫ繝ｫ螟画焚");
+				System.out.printf("蟇ｿ蜻ｽ=%s%n", variable.getProperty(MyVisitor.LIFE_SPAN));
 			} else {
-				System.out.println("フィールド変数");
+				System.out.println("繝輔ぅ繝ｼ繝ｫ繝牙､画焚");
 			}
 
 			System.out.println();
