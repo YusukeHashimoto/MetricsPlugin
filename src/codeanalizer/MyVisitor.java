@@ -17,6 +17,9 @@ public class MyVisitor extends ASTVisitor {
 	static final String DEFINITION_PLACE = "def_place";
 	private MyParser parser;
 	private int cyclomaticComplexity = 1;
+	private boolean isAbstract = false;
+	private String superClass = null;
+	private List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
 
 	public List<MethodDeclaration> getMethodList() {
 		return methodList;
@@ -124,6 +127,30 @@ public class MyVisitor extends ASTVisitor {
 	public boolean visit(DoStatement node) {
 		cyclomaticComplexity++;
 		incrementCC(parentMethodOf(node));
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(TypeDeclaration node) {
+		//System.out.println(this.toString());
+		//System.out.println("abst: " + node.getModifiers());
+		isAbstract = (node.getModifiers() == 1025);
+		try {
+			if(node.getSuperclassType() != null) {
+				superClass = node.getSuperclassType().toString();
+				System.out.println(superClass);
+			}
+		} catch(UnsupportedOperationException e) {
+			
+		}
+		if(isAbstract) System.out.println("abst");
+		
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(MethodInvocation node) {
+		methodInvocations.add(node);
 		return super.visit(node);
 	}
 
