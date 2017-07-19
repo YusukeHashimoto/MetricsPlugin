@@ -2,14 +2,11 @@ package codeanalizer;
 
 import static java.util.Comparator.comparing;
 
-import java.net.URI;
 import java.util.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.dom.*;
 
-import codeanalizer.FileUtil;
-import codeanalizer.MyVisitor;
 import warning.*;
 
 public class CodeAnalizer {
@@ -18,25 +15,34 @@ public class CodeAnalizer {
 	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
 	
 	private double abstractness = 0;
+	private List<String> className = new ArrayList<>();
+	private Map<String, Metrics> metricsMap = new HashMap<>();
 	
 	private List<Warning> warnings = new ArrayList<>();
 
 	public static void main(String args[]) {
-		new CodeAnalizer().run("src/codeanalizer/");
+		//new CodeAnalizer().run("src/codeanalizer/");
+		new CodeAnalizer().run("src/codeanalizer/", "src/metricsplugin/editor/");
 	}
-
+	
+	public void run(String... pathsToPackage) {
+		for(String path: pathsToPackage) {
+			run(path);
+		}
+	}
+	
 	public void run(String pathToPackage) {
 		List<String> classList = FileUtil.getSourceCodeList(pathToPackage);
 		System.out.println("number of classes in the package: " + classList.size());
 
 		for(String className : classList) {
 			System.out.println("\n" + className + "\n");
-			run(pathToPackage, className);
+			analize(pathToPackage, className);
 		}
 		System.out.println("Abstractness: " + abstractness / classList.size());
 	}
 
-	public void run(String pathToPackage, String className) {
+	public void analize(String pathToPackage, String className) {
 		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + className));
 
 		String formattedCode = MyParser.format(rawCode);
