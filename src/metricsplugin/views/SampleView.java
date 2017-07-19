@@ -20,7 +20,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.SaveAction;
 
-import codeanalizer.CodeAnalizer;
+import codeanalyzer.CodeAnalyzer;
 import warning.Warning;
 
 
@@ -229,7 +229,7 @@ public class SampleView extends ViewPart {
 		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
 		IFile file = editorInput.getFile();
 
-		CodeAnalizer ca = new CodeAnalizer();
+		CodeAnalyzer ca = new CodeAnalyzer();
 		String src = file.getLocationURI().getPath();
 		
 		try {

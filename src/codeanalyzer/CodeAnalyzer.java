@@ -1,4 +1,4 @@
-package codeanalizer;
+package codeanalyzer;
 
 import static java.util.Comparator.comparing;
 
@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.*;
 
 import warning.*;
 
-public class CodeAnalizer {
+public class CodeAnalyzer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
 	private static final int THRESHOLD_OF_CYCLOMATIC_CONPLEXITY = 10;
 	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
@@ -21,8 +21,8 @@ public class CodeAnalizer {
 	private List<Warning> warnings = new ArrayList<>();
 
 	public static void main(String args[]) {
-		//new CodeAnalizer().run("src/codeanalizer/");
-		new CodeAnalizer().run("src/codeanalizer/", "src/metricsplugin/editor/");
+		//new CodeAnalyzer().run("src/codeanalizer/");
+		new CodeAnalyzer().run("src/codeanalyzer/", "src/metricsplugin/editor/");
 	}
 	
 	public void run(String... pathsToPackage) {
@@ -37,12 +37,12 @@ public class CodeAnalizer {
 
 		for(String className : classList) {
 			System.out.println("\n" + className + "\n");
-			analize(pathToPackage, className);
+			analyze(pathToPackage, className);
 		}
 		System.out.println("Abstractness: " + abstractness / classList.size());
 	}
 
-	public void analize(String pathToPackage, String className) {
+	public void analyze(String pathToPackage, String className) {
 		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + className));
 
 		String formattedCode = MyParser.format(rawCode);
@@ -142,15 +142,15 @@ public class CodeAnalizer {
 		visitor.getVariableList().stream()
 				.filter(v -> (v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)
 						&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
-				.sorted(comparing(CodeAnalizer::lifeSpanOf).reversed())
+				.sorted(comparing(CodeAnalyzer::lifeSpanOf).reversed())
 				.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, filename, lifeSpanOf(node))));
 
 		visitor.getMethodList().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
-				.sorted(comparing(CodeAnalizer::lineCountOf).reversed())
+				.sorted(comparing(CodeAnalyzer::lineCountOf).reversed())
 				.forEach(node -> warnings.add(new LargeMethodWarning(unit, node, filename, lineCountOf(node))));
 
 		visitor.getMethodList().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
-				.sorted(comparing(CodeAnalizer::cyclomaticComplexityOf).reversed())
+				.sorted(comparing(CodeAnalyzer::cyclomaticComplexityOf).reversed())
 				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, filename, cyclomaticComplexityOf(node))));
 		
 		return warnings;

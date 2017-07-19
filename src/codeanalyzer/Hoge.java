@@ -1,4 +1,4 @@
-package codeanalizer;
+package codeanalyzer;
 
 public abstract class Hoge {
 

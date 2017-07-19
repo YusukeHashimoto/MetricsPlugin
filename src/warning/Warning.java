@@ -3,7 +3,7 @@ package warning;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import codeanalizer.MyVisitor;
+import codeanalyzer.MyVisitor;
 
 public abstract class Warning {
 	private String filename;

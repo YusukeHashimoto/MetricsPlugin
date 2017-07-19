@@ -1,4 +1,4 @@
-package codeanalizer;
+package codeanalyzer;
 
 import java.util.ArrayList;
 import java.util.List;
