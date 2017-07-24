@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -18,7 +19,6 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.eclipse.ui.texteditor.SaveAction;
 
 import codeanalyzer.CodeAnalyzer;
 import warning.Warning;
@@ -237,6 +237,7 @@ public class SampleView extends ViewPart {
 		} catch(Exception e) {
 			ca.run(parentDirOf(src));
 		}
+		analyze();
 		
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
@@ -263,5 +264,32 @@ public class SampleView extends ViewPart {
 	
 	private void refresh() {
 		viewer.setInput(calc());
+	}
+	
+	private void analyze() {
+		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
+		IFile file = editorInput.getFile();
+		IProject project = file.getProject();
+		IJavaProject ijp = JavaCore.create(project);
+		IType type;
+		try {
+			type = ijp.findType("HelloWorld");	//fix later
+		} catch (JavaModelException e) {
+			return;
+		}
+		if (type == null) {
+			return;	// 見つからなかった
+		}
+		try {
+			if (type.isClass()) {
+				// クラス
+			}
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		CodeAnalyzer ca = new CodeAnalyzer();
+		ca.run(type.getCompilationUnit());
 	}
 }

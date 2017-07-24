@@ -5,6 +5,7 @@ import static java.util.Comparator.comparing;
 import java.util.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.*;
 
 import warning.*;
@@ -16,9 +17,8 @@ public class CodeAnalyzer {
 	
 	private double abstractness = 0;
 	private List<String> className = new ArrayList<>();
-	private Map<String, Metrics> metricsMap = new HashMap<>();
-	
 	private List<Warning> warnings = new ArrayList<>();
+	private List<ClassInfo> ci = new ArrayList<>();
 
 	public static void main(String args[]) {
 		//new CodeAnalyzer().run("src/codeanalizer/");
@@ -39,7 +39,8 @@ public class CodeAnalyzer {
 			System.out.println("\n" + className + "\n");
 			analyze(pathToPackage, className);
 		}
-		System.out.println("Abstractness: " + abstractness / classList.size());
+		abstractness /= classList.size();
+		System.out.println("Abstractness: " + abstractness);
 	}
 
 	public void analyze(String pathToPackage, String className) {
@@ -48,7 +49,9 @@ public class CodeAnalyzer {
 		String formattedCode = MyParser.format(rawCode);
 
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setResolveBindings(true);
 		parser.setSource(formattedCode.toCharArray());
+		
 		CompilationUnit unit = (CompilationUnit) parser.createAST(new NullProgressMonitor());
 
 		MyVisitor visitor = new MyVisitor(formattedCode);
@@ -69,6 +72,26 @@ public class CodeAnalyzer {
 
 		//showWarning(unit, formattedCode, pathToPackage + className);
 		warnings.addAll(warnings(unit, formattedCode, pathToPackage + className));
+		
+		ci.add(new ClassInfo(visitor, className));
+	}
+	
+	public void run(ICompilationUnit unit) {
+		analyze(unit);
+	}
+	
+	void analyze(ICompilationUnit unit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setSource(unit);
+		parser.setResolveBindings(true);
+		ASTNode node = parser.createAST(new NullProgressMonitor());
+		
+		MyVisitor visitor = new MyVisitor(null);
+		node.accept(visitor);
+		
+		visitor.getMethodInvocations().stream().forEach(m -> System.out.println("\t" + m.toString()));
+		
+		ci.add(new ClassInfo(visitor, "classname"));
 	}
 
 	private static void printMethodDetail(CompilationUnit unit, String code) {
