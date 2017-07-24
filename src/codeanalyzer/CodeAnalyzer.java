@@ -61,10 +61,11 @@ public class CodeAnalyzer {
 		setLineNum2(visitor, rawCode);
 		
 		if(visitor.isAbstract()) abstractness++;
-		
+		/*
 		for(MethodInvocation mi: visitor.getMethodInvocations()) {
 			System.out.println("\t" + mi.toString());
 		}
+		*/
 		System.out.println("SuperClass: " + visitor.getSuperClass());
 
 		// printMethodDetail(unit, formattedCode);

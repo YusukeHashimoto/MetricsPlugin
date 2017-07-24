@@ -1,6 +1,6 @@
 package codeanalyzer;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -13,6 +13,7 @@ public class ClassInfo {
 	private boolean isAbstractClass = false;
 	private MyVisitor visitor;
 	private List<MethodInvocation> methodInvocations;
+	private Set<String> recievers = new HashSet<>();
 	
 	public ClassInfo(MyVisitor visitor, String filename) {
 		this.visitor = visitor;
@@ -23,10 +24,9 @@ public class ClassInfo {
 		methodInvocations = visitor.getMethodInvocations();
 		
 		try {
-			methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> System.err.println(m.getDeclaringClass().getErasure().getQualifiedName()));
-			
-			//IMethodBinding mb = methodInvocations.get(0).resolveMethodBinding();
-			//System.err.println(mb.getDeclaringClass().getErasure().getQualifiedName());
+			//methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> System.out.println("\t" + m.getDeclaringClass().getErasure().getQualifiedName()));
+			methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> recievers.add(m.getDeclaringClass().getErasure().getQualifiedName()));
+			recievers.stream().forEach(r -> System.out.println(r));
 		} catch(Exception e) {
 			System.err.println("Cannot resolve IMethod Binding because of " + e.toString());
 		}
