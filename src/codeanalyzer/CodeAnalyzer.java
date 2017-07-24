@@ -167,7 +167,7 @@ public class CodeAnalyzer {
 				.filter(v -> (v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)
 						&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
 				.sorted(comparing(CodeAnalyzer::lifeSpanOf).reversed())
-				.forEach(node -> warnings.add(new LifeSpanWarning(unit, node, filename, lifeSpanOf(node))));
+				.forEach(node -> warnings.add(new LargeScopeWarning(unit, node, filename, lifeSpanOf(node))));
 
 		visitor.getMethodList().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
 				.sorted(comparing(CodeAnalyzer::lineCountOf).reversed())
