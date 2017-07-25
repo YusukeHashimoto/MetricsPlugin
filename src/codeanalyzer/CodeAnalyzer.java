@@ -77,20 +77,21 @@ public class CodeAnalyzer {
 		ci.add(new ClassInfo(visitor, className));
 	}
 	
-	public void run(ICompilationUnit unit) {
-		analyze(unit);
+	public void run(ICompilationUnit unit, String src) {
+		analyze(unit, src);
 	}
 	
-	void analyze(ICompilationUnit unit) {
+	void analyze(ICompilationUnit unit, String src) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setSource(unit);
 		parser.setResolveBindings(true);
 		ASTNode node = parser.createAST(new NullProgressMonitor());
 		
-		MyVisitor visitor = new MyVisitor(null);
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(src.substring(1)));
+		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		
-		visitor.getMethodInvocations().stream().forEach(m -> System.out.println("\t" + m.toString()));
+		visitor.getMethodInvocations().stream().forEach(m -> System.out.println("MethodInvocation: " + m.toString()));
 		
 		ci.add(new ClassInfo(visitor, "classname"));
 	}

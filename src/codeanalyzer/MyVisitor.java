@@ -144,18 +144,15 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		//System.out.println(this.toString());
-		//System.out.println("abst: " + node.getModifiers());
-		isAbstract = (node.getModifiers() == 1025);
+		isAbstract = (node.getModifiers() == 1024);
 		try {
 			if(node.getSuperclassType() != null) {
 				superClass = node.getSuperclassType().toString();
-				//System.out.println("SuperClass: " + superClass);
 			}
 		} catch(UnsupportedOperationException e) {
 			
 		}
-		if(isAbstract) System.out.println("This is abstract class.");
+		//if(isAbstract) System.out.println("This is abstract class.");
 		
 		return super.visit(node);
 	}

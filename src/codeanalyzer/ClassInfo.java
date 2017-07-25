@@ -26,7 +26,7 @@ public class ClassInfo {
 		try {
 			//methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> System.out.println("\t" + m.getDeclaringClass().getErasure().getQualifiedName()));
 			methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> recievers.add(m.getDeclaringClass().getErasure().getQualifiedName()));
-			recievers.stream().forEach(r -> System.out.println(r));
+			recievers.stream().forEach(r -> System.out.println("Reciever: " + r));
 		} catch(Exception e) {
 			System.err.println("Cannot resolve IMethod Binding because of " + e.toString());
 		}

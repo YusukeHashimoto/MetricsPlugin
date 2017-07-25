@@ -182,7 +182,7 @@ public class SampleView extends ViewPart {
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			
@@ -199,7 +199,7 @@ public class SampleView extends ViewPart {
 					IDE.gotoMarker(currentEditor(), marker);
 					marker.delete();
 				} catch (CoreException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		};
@@ -269,15 +269,18 @@ public class SampleView extends ViewPart {
 	private void analyze() {
 		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
 		IFile file = editorInput.getFile();
+		String filepath = file.getLocationURI().getPath();
 		IProject project = file.getProject();
 		IJavaProject ijp = JavaCore.create(project);
 		IType type;
+		String classname = "Dog";
 		try {
-			type = ijp.findType("HelloWorld");	//fix later
+			type = ijp.findType(classname);	//fix later
 		} catch (JavaModelException e) {
 			return;
 		}
 		if (type == null) {
+			System.err.println("Cannot find class \'" + classname);
 			return;	// 見つからなかった
 		}
 		try {
@@ -286,10 +289,10 @@ public class SampleView extends ViewPart {
 			}
 		} catch (JavaModelException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.run(type.getCompilationUnit());
+		ca.run(type.getCompilationUnit(), filepath);
 	}
 }
