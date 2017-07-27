@@ -18,9 +18,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import codeanalyzer.CodeAnalyzer;
+import util.ProjectManager;
 import warning.Warning;
 
 
@@ -92,7 +92,7 @@ public class SampleView extends ViewPart {
 		contributeToActionBars();
 
 		//refresh warnings when code has changed
-		currentEditor().addPropertyListener((source, propId) -> refresh());
+		ProjectManager.activeEditor().addPropertyListener((source, propId) -> refresh());
 	}
 
 	private void hookContextMenu() {
@@ -172,7 +172,7 @@ public class SampleView extends ViewPart {
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
-				IFile openedFile = ((IFileEditorInput)currentEditor().getEditorInput()).getFile();
+				IFile openedFile = ((IFileEditorInput)ProjectManager.activeEditor().getEditorInput()).getFile();
 				IProject project = openedFile.getProject();
 				String projectName = project.toString().substring(1);
 				
@@ -187,7 +187,7 @@ public class SampleView extends ViewPart {
 			}
 			
 			private void markLine(int line) {
-				IEditorInput editorInput = currentEditor().getEditorInput();
+				IEditorInput editorInput = ProjectManager.activeEditor().getEditorInput();
 				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
 				
 				Map<String, Integer> attributes = new HashMap<>();
@@ -196,7 +196,7 @@ public class SampleView extends ViewPart {
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
-					IDE.gotoMarker(currentEditor(), marker);
+					IDE.gotoMarker(ProjectManager.activeEditor(), marker);
 					marker.delete();
 				} catch (CoreException e) {
 					//e.printStackTrace();
@@ -226,23 +226,25 @@ public class SampleView extends ViewPart {
 	private List<Warning> warnings;
 	
 	private List<String> calc() {
-		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
-		IFile file = editorInput.getFile();
+		//IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
+		//IFile file = editorInput.getFile();
 
 		CodeAnalyzer ca = new CodeAnalyzer();
-		String src = file.getLocationURI().getPath();
+		//String src = file.getLocationURI().getPath();
 		
 		try {
-			ca.run(parentDirOf(src).substring(1));
+			//ca.run(parentDirOf(src).substring(1));
+			ca.run(ProjectManager.pathToPackage().substring(1));
 		} catch(Exception e) {
-			ca.run(parentDirOf(src));
+			//ca.run(parentDirOf(src));
+			ca.run(ProjectManager.pathToPackage());
 		}
 		analyze();
 		
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
-	
+	/*
 	private static String parentDirOf(String filePath) {
 		for(int i = filePath.length()-1; i > 1; i--) {
 			if(filePath.charAt(i) == '/') {
@@ -252,47 +254,54 @@ public class SampleView extends ViewPart {
 		System.err.println("Input URI does not contain '/', it is not directory URI.");
 		return null;
 	}
-
+*/
 	@Override
 	public Object getAdapter(Class arg0) {
 		return super.getAdapter(arg0);
 	}
-	
+	/*
 	private AbstractTextEditor currentEditor() {
 		return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 	}
-	
+	*/
 	private void refresh() {
 		viewer.setInput(calc());
+		//viewer.setInput(analyze());
 	}
 	
-	private void analyze() {
-		IFileEditorInput editorInput = (IFileEditorInput)currentEditor().getEditorInput();
+	private List<String> analyze() {/*
+		IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
 		IFile file = editorInput.getFile();
 		String filepath = file.getLocationURI().getPath();
-		IProject project = file.getProject();
-		IJavaProject ijp = JavaCore.create(project);
+		*/
+		String filepath = ProjectManager.editingFile().getLocationURI().getPath();
+		IJavaProject ijp = JavaCore.create(ProjectManager.currentProject());
 		IType type;
-		String classname = "Dog";
+		int begin = filepath.lastIndexOf('/') + 1;
+		int end = filepath.lastIndexOf('.');
+		String classname = filepath.substring(begin, end);
+		
 		try {
 			type = ijp.findType(classname);	//fix later
 		} catch (JavaModelException e) {
-			return;
+			return null;
 		}
 		if (type == null) {
-			System.err.println("Cannot find class \'" + classname);
-			return;	// 見つからなかった
-		}
+			System.err.println("Cannot find class \'" + classname + "\'");
+			return null;	// 見つからなかった
+		}/*
 		try {
 			if (type.isClass()) {
 				// クラス
 			}
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
-		
+		*/
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.run(type.getCompilationUnit(), filepath);
+		ca.analyzeCodes(type.getCompilationUnit(), ProjectManager.pathToPackage());//filepath);
+		
+		warnings = ca.getWarnings();
+		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
 }

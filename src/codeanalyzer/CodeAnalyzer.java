@@ -5,9 +5,10 @@ import static java.util.Comparator.comparing;
 import java.util.*;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
+import util.ProjectManager;
 import warning.*;
 
 public class CodeAnalyzer {
@@ -30,7 +31,12 @@ public class CodeAnalyzer {
 			run(path);
 		}
 	}
-	
+
+	/**
+	 * Analyze with level 1
+	 * This method does not use ICompilationUnit
+	 * @param pathToPackage
+	 */
 	public void run(String pathToPackage) {
 		List<String> classList = FileUtil.getSourceCodeList(pathToPackage);
 		System.out.println("number of classes in the package: " + classList.size());
@@ -74,20 +80,43 @@ public class CodeAnalyzer {
 		//showWarning(unit, formattedCode, pathToPackage + className);
 		warnings.addAll(warnings(unit, formattedCode, pathToPackage + className));
 		
-		ci.add(new ClassInfo(visitor, className));
+		//ci.add(new ClassInfo(visitor, className));
 	}
-	
+
+	/**
+	 * Analyze with level 2
+	 * This method uses ICompiationUnit
+	 * @param unit
+	 * @param pathToPackage
+	 */
+	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {
+		List<String> codeList = FileUtil.getSourceCodeList(pathToPackage);
+		codeList.stream().forEach(s -> analyze2(pathToPackage, s));
+	}
+	/*
 	public void run(ICompilationUnit unit, String src) {
 		analyze(unit, src);
-	}
+	}*/
 	
-	void analyze(ICompilationUnit unit, String src) {
+	void analyze2(String pathToPakcage, String filename) {
+		IJavaProject project = JavaCore.create(ProjectManager.currentProject());
+		IType type;
+		String classname = filename.substring(0, filename.lastIndexOf(".java"));
+		try {
+			type = project.findType(classname);
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		ICompilationUnit unit = type.getCompilationUnit();
+		
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setSource(unit);
 		parser.setResolveBindings(true);
 		ASTNode node = parser.createAST(new NullProgressMonitor());
 		
-		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(src.substring(1)));
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPakcage + filename));
 		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		

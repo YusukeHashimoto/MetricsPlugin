@@ -24,12 +24,12 @@ public class ClassInfo {
 		methodInvocations = visitor.getMethodInvocations();
 		
 		try {
-			//methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> System.out.println("\t" + m.getDeclaringClass().getErasure().getQualifiedName()));
-			methodInvocations.stream().map(m -> m.resolveMethodBinding()).forEach(m -> recievers.add(m.getDeclaringClass().getErasure().getQualifiedName()));
-			recievers.stream().forEach(r -> System.out.println("Reciever: " + r));
-		} catch(Exception e) {
+			recievers = methodInvocations.stream().map(
+					m -> m.resolveMethodBinding().getDeclaringClass().getErasure().getQualifiedName()).collect(Collectors.toSet());
+		} catch(NullPointerException e) {
 			System.err.println("Cannot resolve IMethod Binding because of " + e.toString());
 		}
+		recievers.stream().forEach(r -> System.out.println("Reciever: " + r));
 	}
 	
 	public String getFileName() {
