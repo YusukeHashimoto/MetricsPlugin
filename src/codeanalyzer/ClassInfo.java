@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import util.Log;
+
 public class ClassInfo {
 	private String fileName;
 	private List<String> methodNames;
@@ -27,9 +29,9 @@ public class ClassInfo {
 			recievers = methodInvocations.stream().map(
 					m -> m.resolveMethodBinding().getDeclaringClass().getErasure().getQualifiedName()).collect(Collectors.toSet());
 		} catch(NullPointerException e) {
-			System.err.println("Cannot resolve IMethod Binding because of " + e.toString());
+			Log.error("Cannot resolve IMethod Binding because of " + e.toString());
 		}
-		recievers.stream().forEach(r -> System.out.println("Reciever: " + r));
+		recievers.stream().forEach(r -> Log.info("Reciever: " + r));
 	}
 	
 	public String getFileName() {

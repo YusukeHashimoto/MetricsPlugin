@@ -36,7 +36,7 @@ public class ProjectManager {
 				return filePath.substring(0, i+1);
 			}
 		}
-		System.err.println("Input URI does not contain '/', it is not directory URI.");
+		Log.fatal("Input URI does not contain '/', it is not directory URI.");
 		return null;
 	}
 }

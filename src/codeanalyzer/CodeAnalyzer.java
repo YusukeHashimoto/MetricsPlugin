@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
+import util.Log;
 import util.ProjectManager;
 import warning.*;
 
@@ -17,7 +18,6 @@ public class CodeAnalyzer {
 	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
 	
 	private double abstractness = 0;
-	private List<String> className = new ArrayList<>();
 	private List<Warning> warnings = new ArrayList<>();
 	private List<ClassInfo> ci = new ArrayList<>();
 
@@ -32,25 +32,28 @@ public class CodeAnalyzer {
 		}
 	}
 
-	/**
-	 * Analyze with level 1
-	 * This method does not use ICompilationUnit
-	 * @param pathToPackage
-	 */
 	public void run(String pathToPackage) {
 		List<String> classList = FileUtil.getSourceCodeList(pathToPackage);
-		System.out.println("number of classes in the package: " + classList.size());
+		Log.info("number of classes in the package: " + classList.size());
 
 		for(String className : classList) {
-			System.out.println("\n" + className + "\n");
+			Log.info("\n" + className + "\n");
 			analyze(pathToPackage, className);
 		}
 		abstractness /= classList.size();
-		System.out.println("Abstractness: " + abstractness);
+		Log.info("Abstractness: " + abstractness);
+		//Log.print();
 	}
 
-	public void analyze(String pathToPackage, String className) {
-		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + className));
+	/**
+	 * Analyze with level 1
+	 * This method does not use ICompilationUnit
+	 * 
+	 * @param pathToPackage
+	 * @param fileName Filename contains ".java"
+	 */
+	public void analyze(String pathToPackage, String fileName) {
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + fileName));
 
 		String formattedCode = MyParser.format(rawCode);
 
@@ -72,32 +75,29 @@ public class CodeAnalyzer {
 			System.out.println("\t" + mi.toString());
 		}
 		*/
-		System.out.println("SuperClass: " + visitor.getSuperClass());
+		Log.info("SuperClass: " + visitor.getSuperClass());
 
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
 
 		//showWarning(unit, formattedCode, pathToPackage + className);
-		warnings.addAll(warnings(unit, formattedCode, pathToPackage + className));
+		warnings.addAll(warnings(unit, formattedCode, pathToPackage + fileName));
 		
 		//ci.add(new ClassInfo(visitor, className));
 	}
 
-	/**
-	 * Analyze with level 2
-	 * This method uses ICompiationUnit
-	 * @param unit
-	 * @param pathToPackage
-	 */
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {
 		List<String> codeList = FileUtil.getSourceCodeList(pathToPackage);
 		codeList.stream().forEach(s -> analyze2(pathToPackage, s));
 	}
-	/*
-	public void run(ICompilationUnit unit, String src) {
-		analyze(unit, src);
-	}*/
 	
+	/**
+	 * Analyze with level 2
+	 * This method uses ICompilationUnit
+	 * 
+	 * @param pathToPakcage
+	 * @param filename Filename contains ".java"
+	 */
 	void analyze2(String pathToPakcage, String filename) {
 		IJavaProject project = JavaCore.create(ProjectManager.currentProject());
 		IType type;
@@ -105,7 +105,6 @@ public class CodeAnalyzer {
 		try {
 			type = project.findType(classname);
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return;
 		}
@@ -113,16 +112,18 @@ public class CodeAnalyzer {
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setSource(unit);
-		parser.setResolveBindings(true);
+		parser.setResolveBindings(true); // Analyze with level2 to collect detail information
 		ASTNode node = parser.createAST(new NullProgressMonitor());
 		
 		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPakcage + filename));
 		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		
-		visitor.getMethodInvocations().stream().forEach(m -> System.out.println("MethodInvocation: " + m.toString()));
+		visitor.getMethodInvocations().stream().forEach(m -> Log.info("MethodInvocation: " + m.toString()));
 		
 		ci.add(new ClassInfo(visitor, "classname"));
+		
+		Log.print();
 	}
 
 	private static void printMethodDetail(CompilationUnit unit, String code) {
