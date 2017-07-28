@@ -22,6 +22,7 @@ public class MyVisitor extends ASTVisitor {
 	private List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
 	private String packagename;
 	private String filename;
+	private String className;
 
 	public List<MethodDeclaration> getMethodList() {
 		return methodList;
@@ -151,6 +152,7 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		className = node.getName().toString();
 		isAbstract = (node.getModifiers() == 1024);
 		try {
 			if(node.getSuperclassType() != null) {
@@ -173,10 +175,10 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(PackageDeclaration node) {
-		packagename = node.toString();
+		packagename = node.getName().toString();
 		return super.visit(node);
 	}
-
+	
 	int totalCyclomaticComplexity() {
 		return cyclomaticComplexity;
 	}
@@ -213,6 +215,6 @@ public class MyVisitor extends ASTVisitor {
 	
 	public ClassInfo newClassInfo() {
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
-				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass).build();
+				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass).className(className).build();
 	}
 }

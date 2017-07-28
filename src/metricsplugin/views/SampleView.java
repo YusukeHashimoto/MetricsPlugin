@@ -280,7 +280,7 @@ public class SampleView extends ViewPart {
 		int begin = filepath.lastIndexOf('/') + 1;
 		int end = filepath.lastIndexOf('.');
 		String classname = filepath.substring(begin, end);
-		
+		/*
 		try {
 			type = ijp.findType(classname);	//fix later
 		} catch (JavaModelException e) {
@@ -299,7 +299,8 @@ public class SampleView extends ViewPart {
 		}
 		*/
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.analyzeCodes(type.getCompilationUnit(), ProjectUtil.pathToPackage());//filepath);
+		//ca.analyzeCodes(type.getCompilationUnit(), ProjectUtil.pathToPackage());//filepath);
+		ca.analyzeCodes(null, ProjectUtil.pathToPackage());//filepath);
 		
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());

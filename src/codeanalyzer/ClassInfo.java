@@ -1,7 +1,6 @@
 package codeanalyzer;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -18,6 +17,7 @@ public class ClassInfo {
 	private List<MethodInvocation> methodInvocations;
 	private Set<String> recievers;
 	private String packagename;
+	private String className;
 	
 	public ClassInfo(MyVisitor visitor, String filename) {
 		this.fileName = filename;
@@ -27,6 +27,10 @@ public class ClassInfo {
 		isAbstractClass = visitor.isAbstract();
 		methodInvocations = visitor.getMethodInvocations();
 		
+		init();
+	}
+	
+	private void init() {
 		if(methodInvocations.isEmpty()) return;
 		
 		if(methodInvocations.get(0).resolveMethodBinding() == null) {
@@ -36,7 +40,7 @@ public class ClassInfo {
 		
 		recievers = methodInvocations.stream().map(
 				m -> m.resolveMethodBinding().getDeclaringClass().getErasure().getQualifiedName()).collect(Collectors.toSet());
-		recievers.stream().forEach(r -> Log.info("Reciever: " + r));
+		recievers.stream().forEach(r -> Log.info("Reciever :" + r));
 	}
 	
 	
@@ -60,6 +64,14 @@ public class ClassInfo {
 		return packagename;
 	}
 	
+	public Set<String> efficientCouplings() {
+		if(recievers != null && !recievers.isEmpty()) {
+			return recievers.stream().filter(p -> !p.equals(packagename + '.' + className)).collect(Collectors.toSet());
+		} else {
+			return new HashSet<String>();
+		}
+	}
+	
 	static class Builder {
 		private String filename;
 		private String packagename;
@@ -67,6 +79,7 @@ public class ClassInfo {
 		private List<MethodInvocation> methodInvocations;
 		private boolean isAbstract;
 		private String superClass;
+		private String className;
 		
 		public Builder(String filename, String packagename) {
 			this.filename = filename;
@@ -93,6 +106,11 @@ public class ClassInfo {
 			return this;
 		}
 		
+		public Builder className(String className) {
+			this.className = className;
+			return this;
+		}
+		
 		public ClassInfo build() {
 			return new ClassInfo(this);
 		}
@@ -105,5 +123,8 @@ public class ClassInfo {
 		this.methodDeclarations = builder.methodDeclarations;
 		this.isAbstractClass = builder.isAbstract;
 		this.superClass = builder.superClass;
+		this.className = builder.className;
+		
+		init();
 	}
 }

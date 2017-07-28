@@ -77,6 +77,7 @@ public class CodeAnalyzer {
 		}
 		*/
 		Log.info("SuperClass: " + visitor.getSuperClass());
+		ci.stream().filter(c -> c.getPackageName() != null).forEach(c -> Log.info(c.getPackageName()));
 
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
@@ -84,7 +85,10 @@ public class CodeAnalyzer {
 		//showWarning(unit, formattedCode, pathToPackage + className);
 		warnings.addAll(warnings(unit, formattedCode, pathToPackage + fileName));
 		
-		ci.add(new ClassInfo(visitor, fileName));
+		//ci.add(new ClassInfo(visitor, fileName));
+		
+		ci.add(visitor.newClassInfo());
+		
 	}
 
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {
@@ -96,15 +100,17 @@ public class CodeAnalyzer {
 	 * Analyze with level 2
 	 * This method uses ICompilationUnit
 	 * 
-	 * @param pathToPakcage
+	 * @param pathToPackage
 	 * @param filename Filename contains ".java"
 	 */
-	void analyze2(String pathToPakcage, String filename) {
+	void analyze2(String pathToPackage, String filename) {
 		IJavaProject project = JavaCore.create(ProjectUtil.currentProject());
 		IType type;
-		String classname = filename.substring(0, filename.lastIndexOf(".java"));
+		String classname = pathToPackage.substring(pathToPackage.lastIndexOf("/src/")+"/src/".length(), pathToPackage.length()) + 
+				filename.substring(0, filename.lastIndexOf(".java"));
+		
 		try {
-			type = project.findType(classname);
+			type = project.findType(classname.replace('/', '.'));
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 			return;
@@ -116,14 +122,17 @@ public class CodeAnalyzer {
 		parser.setResolveBindings(true); // Analyze with level 2 to collect detail information
 		ASTNode node = parser.createAST(new NullProgressMonitor());
 		
-		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPakcage + filename));
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + filename));
 		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		
 		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
 		
-		//ci.add(new ClassInfo(visitor, "classname"));
-		ci.add(visitor.newClassInfo());
+		ClassInfo c = visitor.newClassInfo();
+		ci.add(c);
+		Log.info("packages used from " + pathToPackage + filename + " {");
+		c.efficientCouplings().stream().forEach(p -> Log.info("\t" + p));
+		Log.info("}");
 		
 		Log.print(Log.INFO);
 		//Log.print();

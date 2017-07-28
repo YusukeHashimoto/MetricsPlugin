@@ -30,7 +30,7 @@ object Log {
 	
 	@JvmStatic
 	fun print() {
-		log.forEach{m -> if(m.priority > 1) System.err.println(m.message) else System.out.println(m.message)}
+		log.forEach{m -> if(m.priority > INFO) System.err.println(m.message) else System.out.println(m.message)}
 	}
 	
 	@JvmStatic
