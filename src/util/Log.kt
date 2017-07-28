@@ -2,10 +2,10 @@ package util
 
 object Log {
 	private val log = ArrayList<Message>()
-	val VERBOSE = 0
-	val INFO = 1
-	val ERROR = 2
-	val FATAL = 3
+	const val VERBOSE = 0
+	const val INFO = 1
+	const val ERROR = 2
+	const val FATAL = 3
 
 	@JvmStatic
 	fun verbose(message: String) {
@@ -35,7 +35,7 @@ object Log {
 	
 	@JvmStatic
 	fun print(priority: Int) {
-		log.filter{m -> m.priority >= priority}.forEach{m -> System.out.println(m)}
+		log.filter{m -> m.priority >= priority}.forEach{m -> System.out.println(m.message)}
 	}
 }
 

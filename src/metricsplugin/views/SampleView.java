@@ -20,7 +20,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 
 import codeanalyzer.CodeAnalyzer;
-import util.ProjectManager;
+import util.ProjectUtil;
 import warning.Warning;
 
 
@@ -92,7 +92,7 @@ public class SampleView extends ViewPart {
 		contributeToActionBars();
 
 		//refresh warnings when code has changed
-		ProjectManager.activeEditor().addPropertyListener((source, propId) -> refresh());
+		ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
 	}
 
 	private void hookContextMenu() {
@@ -172,7 +172,7 @@ public class SampleView extends ViewPart {
 				IWorkbench workbench = PlatformUI.getWorkbench();
 				IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
-				IFile openedFile = ((IFileEditorInput)ProjectManager.activeEditor().getEditorInput()).getFile();
+				IFile openedFile = ((IFileEditorInput)ProjectUtil.activeEditor().getEditorInput()).getFile();
 				IProject project = openedFile.getProject();
 				String projectName = project.toString().substring(1);
 				
@@ -187,7 +187,7 @@ public class SampleView extends ViewPart {
 			}
 			
 			private void markLine(int line) {
-				IEditorInput editorInput = ProjectManager.activeEditor().getEditorInput();
+				IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
 				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
 				
 				Map<String, Integer> attributes = new HashMap<>();
@@ -196,7 +196,7 @@ public class SampleView extends ViewPart {
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
-					IDE.gotoMarker(ProjectManager.activeEditor(), marker);
+					IDE.gotoMarker(ProjectUtil.activeEditor(), marker);
 					marker.delete();
 				} catch (CoreException e) {
 					//e.printStackTrace();
@@ -234,10 +234,10 @@ public class SampleView extends ViewPart {
 		
 		try {
 			//ca.run(parentDirOf(src).substring(1));
-			ca.run(ProjectManager.pathToPackage().substring(1));
+			ca.run(ProjectUtil.pathToPackage().substring(1));
 		} catch(Exception e) {
 			//ca.run(parentDirOf(src));
-			ca.run(ProjectManager.pathToPackage());
+			ca.run(ProjectUtil.pathToPackage());
 		}
 		analyze();
 		
@@ -274,8 +274,8 @@ public class SampleView extends ViewPart {
 		IFile file = editorInput.getFile();
 		String filepath = file.getLocationURI().getPath();
 		*/
-		String filepath = ProjectManager.editingFile().getLocationURI().getPath();
-		IJavaProject ijp = JavaCore.create(ProjectManager.currentProject());
+		String filepath = ProjectUtil.editingFile().getLocationURI().getPath();
+		IJavaProject ijp = JavaCore.create(ProjectUtil.currentProject());
 		IType type;
 		int begin = filepath.lastIndexOf('/') + 1;
 		int end = filepath.lastIndexOf('.');
@@ -299,7 +299,7 @@ public class SampleView extends ViewPart {
 		}
 		*/
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.analyzeCodes(type.getCompilationUnit(), ProjectManager.pathToPackage());//filepath);
+		ca.analyzeCodes(type.getCompilationUnit(), ProjectUtil.pathToPackage());//filepath);
 		
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());

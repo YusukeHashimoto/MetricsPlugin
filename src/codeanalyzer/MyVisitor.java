@@ -20,6 +20,8 @@ public class MyVisitor extends ASTVisitor {
 	private boolean isAbstract = false;
 	private String superClass = null;
 	private List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
+	private String packagename;
+	private String filename;
 
 	public List<MethodDeclaration> getMethodList() {
 		return methodList;
@@ -50,6 +52,11 @@ public class MyVisitor extends ASTVisitor {
 		variableList = new ArrayList<>();
 		blockList = new ArrayList<>();
 		parser = new MyParser(code);
+	}
+	
+	MyVisitor(String code, String filename) {
+		this(code);
+		this.filename = filename;
 	}
 
 	@Override
@@ -163,6 +170,12 @@ public class MyVisitor extends ASTVisitor {
 		//System.out.println("\t" + node.toString());
 		return super.visit(node);
 	}
+	
+	@Override
+	public boolean visit(PackageDeclaration node) {
+		packagename = node.toString();
+		return super.visit(node);
+	}
 
 	int totalCyclomaticComplexity() {
 		return cyclomaticComplexity;
@@ -196,5 +209,10 @@ public class MyVisitor extends ASTVisitor {
 			parent = parent.getParent();
 		}
 		return parent;
+	}
+	
+	public ClassInfo newClassInfo() {
+		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
+				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass).build();
 	}
 }

@@ -6,9 +6,9 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
-public class ProjectManager {
+public class ProjectUtil {
 	
-	private ProjectManager() {}
+	private ProjectUtil() {}
 	
 	public static IProject currentProject() {
 		IFileEditorInput editorInput = (IFileEditorInput)activeEditor().getEditorInput();

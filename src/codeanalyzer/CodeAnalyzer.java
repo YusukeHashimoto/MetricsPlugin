@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
 import util.Log;
-import util.ProjectManager;
+import util.ProjectUtil;
 import warning.*;
 
 public class CodeAnalyzer {
@@ -30,6 +30,7 @@ public class CodeAnalyzer {
 		for(String path: pathsToPackage) {
 			run(path);
 		}
+		Log.print();
 	}
 
 	public void run(String pathToPackage) {
@@ -83,7 +84,7 @@ public class CodeAnalyzer {
 		//showWarning(unit, formattedCode, pathToPackage + className);
 		warnings.addAll(warnings(unit, formattedCode, pathToPackage + fileName));
 		
-		//ci.add(new ClassInfo(visitor, className));
+		ci.add(new ClassInfo(visitor, fileName));
 	}
 
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {
@@ -99,7 +100,7 @@ public class CodeAnalyzer {
 	 * @param filename Filename contains ".java"
 	 */
 	void analyze2(String pathToPakcage, String filename) {
-		IJavaProject project = JavaCore.create(ProjectManager.currentProject());
+		IJavaProject project = JavaCore.create(ProjectUtil.currentProject());
 		IType type;
 		String classname = filename.substring(0, filename.lastIndexOf(".java"));
 		try {
@@ -112,18 +113,20 @@ public class CodeAnalyzer {
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setSource(unit);
-		parser.setResolveBindings(true); // Analyze with level2 to collect detail information
+		parser.setResolveBindings(true); // Analyze with level 2 to collect detail information
 		ASTNode node = parser.createAST(new NullProgressMonitor());
 		
 		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPakcage + filename));
 		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		
-		visitor.getMethodInvocations().stream().forEach(m -> Log.info("MethodInvocation: " + m.toString()));
+		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
 		
-		ci.add(new ClassInfo(visitor, "classname"));
+		//ci.add(new ClassInfo(visitor, "classname"));
+		ci.add(visitor.newClassInfo());
 		
-		Log.print();
+		Log.print(Log.INFO);
+		//Log.print();
 	}
 
 	private static void printMethodDetail(CompilationUnit unit, String code) {
