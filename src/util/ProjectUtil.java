@@ -39,4 +39,9 @@ public class ProjectUtil {
 		Log.fatal("Input URI does not contain '/', it is not directory URI.");
 		return null;
 	}
+	
+	public static String packageOf(String qualifiedName) {
+		int i = qualifiedName.lastIndexOf('.');
+		return qualifiedName.substring(0, i);
+	}
 }

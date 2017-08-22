@@ -7,8 +7,12 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import util.Log;
+import util.ProjectUtil;
 
 public class ClassInfo {
+	public static final int COUPLING_LEVEL_CLASS = 0;
+	public static final int COUPLING_LEVEL_PACKAGE = 1;
+	
 	private String fileName;
 	private List<String> methodNames;
 	private List<MethodDeclaration> methodDeclarations;
@@ -16,7 +20,7 @@ public class ClassInfo {
 	private boolean isAbstractClass = false;
 	private List<MethodInvocation> methodInvocations;
 	private Set<String> recievers;
-	private String packagename;
+	private String packageName;
 	private String className;
 	
 	public ClassInfo(MyVisitor visitor, String filename) {
@@ -43,7 +47,6 @@ public class ClassInfo {
 		recievers.stream().forEach(r -> Log.info("Reciever :" + r));
 	}
 	
-	
 	public String getFileName() {
 		return fileName;
 	}
@@ -61,12 +64,16 @@ public class ClassInfo {
 	}
 	
 	public String getPackageName() {
-		return packagename;
+		return packageName;
 	}
 	
-	public Set<String> efficientCouplings() {
+	public Set<String> efficientCouplings(int couplingLevel) {
 		if(recievers != null && !recievers.isEmpty()) {
-			return recievers.stream().filter(p -> !p.equals(packagename + '.' + className)).collect(Collectors.toSet());
+			if(couplingLevel == COUPLING_LEVEL_CLASS) {
+				return recievers.stream().filter(p -> !p.equals(packageName + '.' + className)).collect(Collectors.toSet());
+			} else {
+				return recievers.stream().filter(p -> !ProjectUtil.packageOf(p).equals(packageName)).collect(Collectors.toSet());
+			}
 		} else {
 			return new HashSet<String>();
 		}
@@ -118,7 +125,7 @@ public class ClassInfo {
 	
 	private ClassInfo(Builder builder) {
 		this.fileName = builder.filename;
-		this.packagename = builder.packagename;
+		this.packageName = builder.packagename;
 		this.methodInvocations = builder.methodInvocations;
 		this.methodDeclarations = builder.methodDeclarations;
 		this.isAbstractClass = builder.isAbstract;

@@ -35,7 +35,7 @@ object Log {
 	
 	@JvmStatic
 	fun print(priority: Int) {
-		log.filter{m -> m.priority >= priority}.forEach{m -> System.out.println(m.message)}
+		log.filter{m -> m.priority >= priority}.forEach{m -> if(m.priority > INFO) System.err.println(m.message) else System.out.println(m.message)}
 	}
 }
 

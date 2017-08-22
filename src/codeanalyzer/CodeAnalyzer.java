@@ -30,7 +30,7 @@ public class CodeAnalyzer {
 		for(String path: pathsToPackage) {
 			run(path);
 		}
-		Log.print();
+		Log.print(Log.INFO);
 	}
 
 	public void run(String pathToPackage) {
@@ -131,7 +131,7 @@ public class CodeAnalyzer {
 		ClassInfo c = visitor.newClassInfo();
 		ci.add(c);
 		Log.info("packages used from " + pathToPackage + filename + " {");
-		c.efficientCouplings().stream().forEach(p -> Log.info("\t" + p));
+		c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
 		Log.info("}");
 		
 		Log.print(Log.INFO);
