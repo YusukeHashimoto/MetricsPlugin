@@ -72,6 +72,13 @@ public class ClassInfo {
 		}
 	}
 	
+	public Set<Response> responsesForClass() {
+		final Set<Response> s = methodInvocations.stream().map(mi -> new Response(mi.resolveMethodBinding().getDeclaringClass().getName(), mi.getName().toString()))
+		.filter(r -> !r.getClassname().equals(className)).collect(Collectors.toSet());
+		methodNames.stream().forEach(m -> s.add(new Response(className, m)));
+		return s;
+	}
+	
 	static class Builder {
 		private String filename;
 		private String packagename;
