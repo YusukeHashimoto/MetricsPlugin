@@ -239,4 +239,7 @@ public class CodeAnalyzer {
 		return warnings;
 	}
 
+	public List<ClassInfo> getClassInfo() {
+		return ci;
+	}
 }
