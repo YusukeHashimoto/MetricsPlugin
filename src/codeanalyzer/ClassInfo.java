@@ -86,6 +86,14 @@ public class ClassInfo {
 		return s;
 	}
 	
+	public int weightedMethodsPerClass() {
+		int wmc = 0;
+		for(MethodDeclaration m : methodDeclarations) {
+			wmc += (int)(m.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
+		}
+		return wmc;
+	}
+	
 	static class Builder {
 		private String filename;
 		private String packagename;
