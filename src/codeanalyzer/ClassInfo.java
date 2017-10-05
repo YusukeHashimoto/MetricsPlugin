@@ -23,6 +23,10 @@ public class ClassInfo {
 	private String packageName;
 	private String className;
 	
+	public String getClassName() {
+		return className;
+	}
+
 	public ClassInfo(MyVisitor visitor, String filename) {
 		this.fileName = filename;
 		this.methodDeclarations = visitor.getMethodList();

@@ -2,8 +2,10 @@ package codeanalyzer.test;
 
 public class Animal {
 	
-	public void eat() {
-		
+	public void eat(Food food) {
+		if(canEat(food)) {
+			
+		}
 	}
 	
 	public void sleep() {
@@ -12,5 +14,9 @@ public class Animal {
 	
 	public void walk() {
 		
+	}
+	
+	public boolean canEat(Food food) {
+		return true;
 	}
 }
