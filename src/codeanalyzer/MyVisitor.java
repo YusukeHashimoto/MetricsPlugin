@@ -23,6 +23,11 @@ public class MyVisitor extends ASTVisitor {
 	private String packagename;
 	private String filename;
 	private String className;
+	private List<SingleVariableDeclaration> parameters = new ArrayList<>();
+
+	public List<SingleVariableDeclaration> getParameters() {
+		return parameters;
+	}
 
 	public List<MethodDeclaration> getMethodList() {
 		return methodList;
@@ -65,6 +70,8 @@ public class MyVisitor extends ASTVisitor {
 		node.setProperty(LINE_COUNT, Integer.valueOf(countLines(node.getBody().toString())));
 		node.setProperty(CYCLOMATIC_COMPLEXITY, 1);
 		methodList.add(node);
+		
+		parameters.addAll(node.parameters());
 		return super.visit(node);
 	}
 

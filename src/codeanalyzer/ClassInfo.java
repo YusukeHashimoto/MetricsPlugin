@@ -22,6 +22,7 @@ public class ClassInfo {
 	private Set<String> recievers;
 	private String packageName;
 	private String className;
+	private List<String> parameters;
 	
 	public String getClassName() {
 		return className;
@@ -34,6 +35,7 @@ public class ClassInfo {
 		superClass = visitor.getSuperClass();
 		isAbstractClass = visitor.isAbstract();
 		methodInvocations = visitor.getMethodInvocations();
+		parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
 		
 		init();
 	}
