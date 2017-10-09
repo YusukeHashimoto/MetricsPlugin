@@ -100,6 +100,23 @@ public class ClassInfo {
 		return wmc;
 	}
 	
+	public int depthOfInheritanceTree(List<ClassInfo> classList) {
+		if(superClass == null || superClass.equals("Object") || superClass.equalsIgnoreCase("")) return 2;
+
+		for(ClassInfo ci : classList) {
+			if(ci.getClassName().equals(superClass)) return ci.depthOfInheritanceTree(classList) + 1;
+		}
+		return 3;
+	}
+	
+	public int numberOfChildren(List<ClassInfo> classList) {
+		int noc = 0;
+		for(ClassInfo ci : classList) {
+			if(className.equals(ci.getSuperClass())) noc++;
+		}
+		return noc;
+	}
+	
 	static class Builder {
 		private String filename;
 		private String packagename;
