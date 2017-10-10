@@ -19,7 +19,7 @@ public class CodeAnalyzer {
 	
 	private double abstractness = 0;
 	private List<Warning> warnings = new ArrayList<>();
-	private List<ClassInfo> ci = new ArrayList<>();
+	private Map<String, ClassInfo> ci = new HashMap<>();
 
 	public static void main(String args[]) {
 		//new CodeAnalyzer().run("src/codeanalizer/");
@@ -44,6 +44,7 @@ public class CodeAnalyzer {
 		abstractness /= classList.size();
 		Log.info("Abstractness: " + abstractness);
 		//Log.print();
+		//new PackageInfo(pathToPackage, ci);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class CodeAnalyzer {
 		}
 		*/
 		Log.info("SuperClass: " + visitor.getSuperClass());
-		ci.stream().filter(c -> c.getPackageName() != null).forEach(c -> Log.info(c.getPackageName()));
+		ci.entrySet().stream().filter(c -> c.getValue().getPackageName() != null).forEach(c -> Log.info(c.getValue().getPackageName()));
 
 		// printMethodDetail(unit, formattedCode);
 		// printVariableDetail(unit, formattedCode);
@@ -87,7 +88,8 @@ public class CodeAnalyzer {
 		
 		//ci.add(new ClassInfo(visitor, fileName));
 		
-		ci.add(visitor.newClassInfo());
+		ClassInfo c = visitor.newClassInfo();
+		ci.put(c.getClassName(), c);
 		
 	}
 
@@ -129,7 +131,7 @@ public class CodeAnalyzer {
 		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
 		
 		ClassInfo c = visitor.newClassInfo();
-		ci.add(c);
+		ci.put(c.getClassName(), c);
 		Log.info("packages used from " + pathToPackage + filename + " {");
 		c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
 		Log.info("}");
@@ -239,7 +241,7 @@ public class CodeAnalyzer {
 		return warnings;
 	}
 
-	public List<ClassInfo> getClassInfo() {
+	public Map<String, ClassInfo> getClassInfo() {
 		return ci;
 	}
 }

@@ -10,50 +10,45 @@ import org.junit.Ignore
 class SimpleTest {
 	@Test
 	fun testNumberOfClass() {
-		assertEquals(infoList.size, 3)
+		assertEquals(infoMap.size, 3)
 	}
 
 	@Test
 	fun testWMC() {
-		for (ci in infoList) {
-			if (ci.getClassName().contains("Test")) continue
-			assertEquals(ci.weightedMethodsPerClass(), WMCMap.get(ci.getClassName()) as Int)
+		infoMap.forEach {
+			assertEquals(it.value.weightedMethodsPerClass(), WMCMap[it.value.className])
 		}
 	}
 
 	@Ignore
 	@Test
 	fun testRFC() {
-		for (ci in infoList) {
-			System.out.println(ci.responsesForClass())
-		}
+
 	}
 
 	@Ignore
 	@Test
 	fun testCBO() {
-		for(ci in infoList) {
-			if(ci.getClassName().contains("Test")) continue;
-			assertEquals(ci.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).size, CBOMap.get(ci.getClassName()));
-		}
+
 	}
 	
 	@Test
 	fun testDIT() {
-		for(ci in infoList) {
-			assertEquals(DITMap[ci.className], ci.depthOfInheritanceTree(infoList))
+		infoMap.forEach {
+			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap))
 		}
 	}
 	
+	
 	@Test
 	fun testNOC() {
-		for(ci in infoList) {
-			assertEquals(NOCMap[ci.className], ci.numberOfChildren(infoList))
+		infoMap.forEach {
+			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap))
 		}
 	}
 
 	companion object {
-		private lateinit var infoList: List<ClassInfo>
+		private lateinit var infoMap: Map<String, ClassInfo>
 		private val WMCMap = mapOf("Animal" to 5, "Food" to 0, "Dog" to 0)
 		private val CBOMap = mapOf("Animal" to 1, "Food" to 0, "Dog" to 0)
 		private val DITMap = mapOf("Animal" to 2, "Food" to 2, "Dog" to 3)
@@ -63,7 +58,7 @@ class SimpleTest {
 		fun init() {
 			val analyzer = CodeAnalyzer()
 			analyzer.run("src/codeanalyzer/test/")
-			infoList = analyzer.getClassInfo()
+			infoMap = analyzer.getClassInfo()
 		}
 	}
 }

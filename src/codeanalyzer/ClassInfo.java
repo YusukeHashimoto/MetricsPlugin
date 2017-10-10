@@ -1,6 +1,7 @@
 package codeanalyzer;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -16,13 +17,16 @@ public class ClassInfo {
 	private String fileName;
 	private List<String> methodNames;
 	private List<MethodDeclaration> methodDeclarations;
-	private String superClass;
+	private String superclassName;
 	private boolean isAbstractClass = false;
 	private List<MethodInvocation> methodInvocations;
 	private Set<String> recievers;
 	private String packageName;
 	private String className;
 	private List<String> parameters;
+	
+	private ClassInfo superclass;
+	private List<ClassInfo> subclasses = new ArrayList<>();
 	
 	public String getClassName() {
 		return className;
@@ -32,7 +36,7 @@ public class ClassInfo {
 		this.fileName = filename;
 		this.methodDeclarations = visitor.getMethodList();
 		methodNames = visitor.getMethodList().stream().map(MethodDeclaration::toString).collect(Collectors.toList());
-		superClass = visitor.getSuperClass();
+		superclassName = visitor.getSuperClass();
 		isAbstractClass = visitor.isAbstract();
 		methodInvocations = visitor.getMethodInvocations();
 		parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
@@ -61,8 +65,8 @@ public class ClassInfo {
 		return methodNames;
 	}
 
-	public String getSuperClass() {
-		return superClass;
+	public String getSuperclassName() {
+		return superclassName;
 	}
 
 	public boolean isAbstractClass() {
@@ -73,6 +77,22 @@ public class ClassInfo {
 		return packageName;
 	}
 	
+	public ClassInfo getSuperclass() {
+		return superclass;
+	}
+
+	public void setSuperclass(ClassInfo superclass) {
+		this.superclass = superclass;
+	}
+
+	public List<ClassInfo> getSubclasses() {
+		return subclasses;
+	}
+	
+	public void addSubclass(ClassInfo subclass) {
+		subclasses.add(subclass);
+	}
+
 	public Set<String> efficientCouplings(int couplingLevel) {
 		if(recievers != null && !recievers.isEmpty()) {
 			if(couplingLevel == COUPLING_LEVEL_CLASS) {
@@ -100,19 +120,21 @@ public class ClassInfo {
 		return wmc;
 	}
 	
-	public int depthOfInheritanceTree(List<ClassInfo> classList) {
-		if(superClass == null || superClass.equals("Object") || superClass.equalsIgnoreCase("")) return 2;
+	public int depthOfInheritanceTree(Map<String, ClassInfo> classList) {
+		if(superclassName == null || superclassName.equals("Object") || superclassName.equalsIgnoreCase("")) return 2;
 
-		for(ClassInfo ci : classList) {
-			if(ci.getClassName().equals(superClass)) return ci.depthOfInheritanceTree(classList) + 1;
+		for(Entry<String, ClassInfo> e : classList.entrySet()) {
+			ClassInfo ci = e.getValue();
+			if(ci.getClassName().equals(superclassName)) return ci.depthOfInheritanceTree(classList) + 1;
 		}
 		return 3;
 	}
 	
-	public int numberOfChildren(List<ClassInfo> classList) {
+	public int numberOfChildren(Map<String, ClassInfo> classList) {
 		int noc = 0;
-		for(ClassInfo ci : classList) {
-			if(className.equals(ci.getSuperClass())) noc++;
+		for(Entry<String, ClassInfo> e : classList.entrySet()) {
+			ClassInfo ci = e.getValue();
+			if(className.equals(ci.getSuperclassName())) noc++;
 		}
 		return noc;
 	}
@@ -167,7 +189,7 @@ public class ClassInfo {
 		this.methodInvocations = builder.methodInvocations;
 		this.methodDeclarations = builder.methodDeclarations;
 		this.isAbstractClass = builder.isAbstract;
-		this.superClass = builder.superClass;
+		this.superclassName = builder.superClass;
 		this.className = builder.className;
 		
 		init();
