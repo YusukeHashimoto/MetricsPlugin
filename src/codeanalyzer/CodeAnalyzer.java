@@ -91,6 +91,8 @@ public class CodeAnalyzer {
 		ClassInfo c = visitor.newClassInfo();
 		ci.put(c.getClassName(), c);
 		
+		PackageInfo pi = new PackageInfo(pathToPackage, ci);
+		System.out.println();
 	}
 
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {

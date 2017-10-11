@@ -26,7 +26,7 @@ public class ClassInfo {
 	private List<String> parameters;
 	
 	private ClassInfo superclass;
-	private List<ClassInfo> subclasses = new ArrayList<>();
+	private Set<ClassInfo> subclasses = new HashSet<>();
 	
 	public String getClassName() {
 		return className;
@@ -85,7 +85,7 @@ public class ClassInfo {
 		this.superclass = superclass;
 	}
 
-	public List<ClassInfo> getSubclasses() {
+	public Set<ClassInfo> getSubclasses() {
 		return subclasses;
 	}
 	
@@ -131,12 +131,16 @@ public class ClassInfo {
 	}
 	
 	public int numberOfChildren(Map<String, ClassInfo> classList) {
-		int noc = 0;
-		for(Entry<String, ClassInfo> e : classList.entrySet()) {
-			ClassInfo ci = e.getValue();
-			if(className.equals(ci.getSuperclassName())) noc++;
+		int noc = subclasses.size();
+		for(ClassInfo subclass : subclasses) {
+			noc += subclass.numberOfChildren(classList);
 		}
 		return noc;
+	}
+	
+	@Override
+	public String toString() {
+		return className;
 	}
 	
 	static class Builder {
