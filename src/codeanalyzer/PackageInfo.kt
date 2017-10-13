@@ -1,6 +1,6 @@
 package codeanalyzer
 
-class PackageInfo(packagename: String?, classMap: Map<String, ClassInfo>?) {
+class PackageInfo(packagename: String, classMap: Map<String, ClassInfo>) {
 
 	init {
 		classMap?.forEach {

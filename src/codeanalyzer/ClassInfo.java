@@ -4,8 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.*;
 
 import util.Log;
 import util.ProjectUtil;
@@ -24,6 +23,8 @@ public class ClassInfo {
 	private String packageName;
 	private String className;
 	private List<String> parameters;
+	private List<VariableDeclarationFragment> varDecls;
+	private Set<VariableDeclarationFragment> fieldVars;
 	
 	private ClassInfo superclass;
 	private Set<ClassInfo> subclasses = new HashSet<>();
@@ -40,6 +41,8 @@ public class ClassInfo {
 		isAbstractClass = visitor.isAbstract();
 		methodInvocations = visitor.getMethodInvocations();
 		parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
+		varDecls = visitor.getVariableList();
+		fieldVars = varDecls.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
 		
 		init();
 	}
@@ -129,13 +132,21 @@ public class ClassInfo {
 		}
 		return 3;
 	}
-	
+		
 	public int numberOfChildren(Map<String, ClassInfo> classList) {
 		int noc = subclasses.size();
 		for(ClassInfo subclass : subclasses) {
 			noc += subclass.numberOfChildren(classList);
 		}
 		return noc;
+	}
+	
+	public int lackOfCohesionInMethods() {
+		int x = 0;
+		for(VariableDeclarationFragment v : fieldVars) {
+			
+		}
+		return 0;
 	}
 	
 	@Override

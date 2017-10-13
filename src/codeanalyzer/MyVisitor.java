@@ -13,7 +13,7 @@ public class MyVisitor extends ASTVisitor {
 	static final String LIFE_SPAN = "life";
 	public static final String DECLARED_LINE = "declared_line";
 	static final String CYCLOMATIC_COMPLEXITY = "mccabe";
-	static final String LOCAL_VARIABLE = "local";
+	//static final String LOCAL_VARIABLE = "local";
 	static final String DEFINITION_PLACE = "def_place";
 	private MyParser parser;
 	private int cyclomaticComplexity = 1;
@@ -186,10 +186,15 @@ public class MyVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 	
+	@Override
+	public boolean visit(SimpleName node) {
+		return super.visit(node);
+	}
+	
 	int totalCyclomaticComplexity() {
 		return cyclomaticComplexity;
 	}
-
+	
 	private MethodDeclaration parentMethodOf(ASTNode node) {
 		ASTNode parent = node.getParent();
 		while(!(parent instanceof MethodDeclaration)) {
@@ -218,7 +223,7 @@ public class MyVisitor extends ASTVisitor {
 			parent = parent.getParent();
 		}
 		return parent;
-	}
+	} 
 	
 	public ClassInfo newClassInfo() {
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
