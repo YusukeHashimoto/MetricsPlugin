@@ -25,6 +25,7 @@ public class ClassInfo {
 	private List<String> parameters;
 	private List<VariableDeclarationFragment> varDecls;
 	private Set<VariableDeclarationFragment> fieldVars;
+	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap;
 	
 	private ClassInfo superclass;
 	private Set<ClassInfo> subclasses = new HashSet<>();
@@ -43,6 +44,7 @@ public class ClassInfo {
 		parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
 		varDecls = visitor.getVariableList();
 		fieldVars = varDecls.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
+		cohesionMap = visitor.getCohesionMap();
 		
 		init();
 	}
@@ -142,9 +144,12 @@ public class ClassInfo {
 	}
 	
 	public int lackOfCohesionInMethods() {
-		int x = 0;
-		for(VariableDeclarationFragment v : fieldVars) {
-			
+		for(VariableDeclarationFragment var : fieldVars) {
+			Set<MethodDeclaration> set = cohesionMap.get(var);
+			if(set != null)
+				System.out.println(var.getName().getFullyQualifiedName() + " is accessed in " + cohesionMap.get(var).size() + " methods");
+			else
+				System.err.println("Cannot calcurate LCOM of " + var.getName().getIdentifier());
 		}
 		return 0;
 	}
@@ -162,6 +167,9 @@ public class ClassInfo {
 		private boolean isAbstract;
 		private String superClass;
 		private String className;
+		private List<VariableDeclarationFragment> varList;
+		private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap;
+		private Set<VariableDeclarationFragment> fieldVars;
 		
 		public Builder(String filename, String packagename) {
 			this.filename = filename;
@@ -193,6 +201,21 @@ public class ClassInfo {
 			return this;
 		}
 		
+		public Builder varList(List<VariableDeclarationFragment> varList) {
+			this.varList = varList;
+			return this;
+		}
+		
+		public Builder cohesionMap(Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap) {
+			this.cohesionMap = cohesionMap;
+			return this;
+		}
+		
+		public Builder fieldVars(Set<VariableDeclarationFragment> fieldVars) {
+			this.fieldVars = fieldVars;
+			return this;
+		}
+		
 		public ClassInfo build() {
 			return new ClassInfo(this);
 		}
@@ -206,6 +229,9 @@ public class ClassInfo {
 		this.isAbstractClass = builder.isAbstract;
 		this.superclassName = builder.superClass;
 		this.className = builder.className;
+		this.varDecls = builder.varList;
+		this.cohesionMap = builder.cohesionMap;
+		this.fieldVars = builder.fieldVars;
 		
 		init();
 	}

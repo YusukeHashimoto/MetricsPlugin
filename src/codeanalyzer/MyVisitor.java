@@ -1,7 +1,7 @@
 package codeanalyzer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.*;
 
@@ -24,6 +24,11 @@ public class MyVisitor extends ASTVisitor {
 	private String filename;
 	private String className;
 	private List<SingleVariableDeclaration> parameters = new ArrayList<>();
+	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap = new HashMap<>();
+
+	public Map<VariableDeclarationFragment, Set<MethodDeclaration>> getCohesionMap() {
+		return cohesionMap;
+	}
 
 	public List<SingleVariableDeclaration> getParameters() {
 		return parameters;
@@ -188,6 +193,17 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(SimpleName node) {
+		if(parentMethodOf(node) == null) return super.visit(node);
+		
+		List<VariableDeclarationFragment> fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toList());
+		for(VariableDeclarationFragment var : fieldVars) {
+			if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && definedClassOf(var).equals(definedClassOf(node))) {
+				if(cohesionMap.get(var) == null) {
+					cohesionMap.put(var, new HashSet<MethodDeclaration>());
+				}
+				cohesionMap.get(var).add(parentMethodOf(node));
+			}
+		}
 		return super.visit(node);
 	}
 	
@@ -225,8 +241,20 @@ public class MyVisitor extends ASTVisitor {
 		return parent;
 	} 
 	
+	private static AbstractTypeDeclaration definedClassOf(ASTNode node) {
+		ASTNode parent = node.getParent();
+		if(parent == null) return null;
+		while(!(parent instanceof AbstractTypeDeclaration)) {
+			parent = parent.getParent();
+		}
+		return (AbstractTypeDeclaration)parent;
+	}
+	
 	public ClassInfo newClassInfo() {
+		Set<VariableDeclarationFragment> fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
+		
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
-				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass).className(className).build();
+				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass)
+				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars).build();
 	}
 }

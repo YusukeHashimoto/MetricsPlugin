@@ -93,6 +93,8 @@ public class CodeAnalyzer {
 		
 		PackageInfo pi = new PackageInfo(pathToPackage, ci);
 		System.out.println();
+		
+		c.lackOfCohesionInMethods();
 	}
 
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage) {
