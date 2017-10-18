@@ -225,7 +225,7 @@ public class CodeAnalyzer {
 		visitor.getMethodList().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
 				.sorted(comparing(CodeAnalyzer::cyclomaticComplexityOf).reversed())
 				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, filename, cyclomaticComplexityOf(node))));
-		
+
 		return warnings;
 	}
 

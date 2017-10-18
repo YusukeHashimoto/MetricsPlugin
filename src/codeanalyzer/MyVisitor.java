@@ -1,6 +1,7 @@
 package codeanalyzer;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.*;
@@ -25,6 +26,7 @@ public class MyVisitor extends ASTVisitor {
 	private String className;
 	private List<SingleVariableDeclaration> parameters = new ArrayList<>();
 	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap = new HashMap<>();
+	private List<SimpleName> names = new ArrayList<>();
 
 	public Map<VariableDeclarationFragment, Set<MethodDeclaration>> getCohesionMap() {
 		return cohesionMap;
@@ -83,7 +85,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationFragment node) {
 		node.setProperty(LIFE_SPAN, parser.lifeSpanOf(node));
-		node.setProperty(DEFINITION_PLACE, definitionPlace(node));
+		node.setProperty(DEFINITION_PLACE, ASTUtil.definitionPlaceOf(node));
 		variableList.add(node);
 		return super.visit(node);
 	}
@@ -97,28 +99,28 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(IfStatement node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(SwitchCase node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(WhileStatement node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(ForStatement node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 
 	}
@@ -126,21 +128,21 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(CatchClause node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(EnhancedForStatement node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(ConditionalExpression node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 
@@ -150,7 +152,7 @@ public class MyVisitor extends ASTVisitor {
 		if(operator == InfixExpression.Operator.CONDITIONAL_AND
 				|| operator == InfixExpression.Operator.CONDITIONAL_OR) {
 			cyclomaticComplexity++;
-			incrementCC(parentMethodOf(node));
+			incrementCC(ASTUtil.parentMethodOf(node));
 		}
 		return super.visit(node);
 	}
@@ -158,7 +160,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(DoStatement node) {
 		cyclomaticComplexity++;
-		incrementCC(parentMethodOf(node));
+		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
 	
@@ -193,17 +195,34 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(SimpleName node) {
-		if(parentMethodOf(node) == null) return super.visit(node);
+		names.add(node);
+		/*
+		if(ASTUtil.parentMethodOf(node) == null) return super.visit(node);
 		
-		List<VariableDeclarationFragment> fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toList());
+		//List<VariableDeclarationFragment> 
+		fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toList());
+		List<VariableDeclarationFragment> localVars = new ArrayList<VariableDeclarationFragment>(variableList); // contains parameters
+		localVars.removeAll(fieldVars);
+		
+		//Map<String, VariableDeclarationFragment>
+		fieldVarMap = variableList.stream().filter(v -> ASTUtil.isField(v) && ASTUtil.definedClassOf(node).getName().toString().equals(className))
+				.collect(Collectors.toMap(VariableDeclarationFragment::toString, v -> v));
+		
 		for(VariableDeclarationFragment var : fieldVars) {
-			if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && definedClassOf(var).equals(definedClassOf(node))) {
+			if(!fieldVarMap.containsValue(var)) {
+				System.out.println(var + " is not a field");
+			}
+			if(!ASTUtil.isField(var)) {
+				System.out.println(var + " is not a field");
+			}
+			if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
+				//if(fieldVarMap.containsKey(var.toString())) continue;
 				if(cohesionMap.get(var) == null) {
 					cohesionMap.put(var, new HashSet<MethodDeclaration>());
 				}
-				cohesionMap.get(var).add(parentMethodOf(node));
+				cohesionMap.get(var).add(ASTUtil.parentMethodOf(node));
 			}
-		}
+		}*/
 		return super.visit(node);
 	}
 	
@@ -211,15 +230,6 @@ public class MyVisitor extends ASTVisitor {
 		return cyclomaticComplexity;
 	}
 	
-	private MethodDeclaration parentMethodOf(ASTNode node) {
-		ASTNode parent = node.getParent();
-		while(!(parent instanceof MethodDeclaration)) {
-			parent = parent.getParent();
-			if(parent == null) return null;
-		}
-		return (MethodDeclaration) parent;
-	}
-
 	private void incrementCC(MethodDeclaration node) {
 		node.setProperty(CYCLOMATIC_COMPLEXITY, (Integer) node.getProperty(CYCLOMATIC_COMPLEXITY) + 1);
 	}
@@ -231,30 +241,44 @@ public class MyVisitor extends ASTVisitor {
 		}
 		return n;
 	}
+	
+	private Set<VariableDeclarationFragment> fieldVars;
 
-	private ASTNode definitionPlace(ASTNode node) {
-		ASTNode parent = node.getParent();
-		if(parent == null) return node;
-		while(!(parent instanceof MethodDeclaration) && !(parent instanceof CompilationUnit)) {
-			parent = parent.getParent();
-		}
-		return parent;
-	} 
-	
-	private static AbstractTypeDeclaration definedClassOf(ASTNode node) {
-		ASTNode parent = node.getParent();
-		if(parent == null) return null;
-		while(!(parent instanceof AbstractTypeDeclaration)) {
-			parent = parent.getParent();
-		}
-		return (AbstractTypeDeclaration)parent;
-	}
-	
 	public ClassInfo newClassInfo() {
-		Set<VariableDeclarationFragment> fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
+		generateCohesionMap();
+		//Set<VariableDeclarationFragment> 
+		//fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
 		
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
 				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass)
 				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars).build();
+	}
+	
+	private void generateCohesionMap() {
+		Map<String, VariableDeclarationFragment> fieldVars = variableList.stream().filter(v -> ASTUtil.isField(v) && ASTUtil.definedClassOf(v).getName().toString().equals(className))
+				.collect(Collectors.toMap(VariableDeclarationFragment::toString, v -> v));
+		List<VariableDeclarationFragment> nonFieldVars = variableList.stream().filter(v -> !fieldVars.containsValue(v)).collect(Collectors.toList());
+
+		for(SimpleName node : names) {
+			if(ASTUtil.parentMethodOf(node) == null) continue;
+			
+			for(Entry<String, VariableDeclarationFragment> e : fieldVars.entrySet()) {
+				VariableDeclarationFragment var = (VariableDeclarationFragment) e.getValue();
+				if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
+					for(VariableDeclarationFragment nf : nonFieldVars) {
+						if(nf.getName().toString().equals(var.getName().toString())) {
+							System.out.println("dublicaple name " + nf.getName().toString());
+						}
+					}
+					if(cohesionMap.get(var) == null) {
+						cohesionMap.put(var, new HashSet<MethodDeclaration>());
+					}
+					cohesionMap.get(var).add(ASTUtil.parentMethodOf(node));
+				
+				}
+			}
+		}
+		this.fieldVars = new HashSet<VariableDeclarationFragment>(fieldVars.values());
+		System.out.println();
 	}
 }

@@ -26,6 +26,7 @@ public class ClassInfo {
 	private List<VariableDeclarationFragment> varDecls;
 	private Set<VariableDeclarationFragment> fieldVars;
 	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap;
+	private Set<VariableDeclarationFragment> localVars;
 	
 	private ClassInfo superclass;
 	private Set<ClassInfo> subclasses = new HashSet<>();
@@ -50,6 +51,12 @@ public class ClassInfo {
 	}
 	
 	private void init() {
+		extractRecievers();
+		localVars = new HashSet<>(varDecls);
+		localVars.removeAll(fieldVars);
+	}
+	
+	private void extractRecievers() {
 		if(methodInvocations.isEmpty()) return;
 		
 		if(methodInvocations.get(0).resolveMethodBinding() == null) {
@@ -144,6 +151,8 @@ public class ClassInfo {
 	}
 	
 	public int lackOfCohesionInMethods() {
+		System.out.println("\t class " + className);
+		
 		for(VariableDeclarationFragment var : fieldVars) {
 			Set<MethodDeclaration> set = cohesionMap.get(var);
 			if(set != null)
