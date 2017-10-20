@@ -155,10 +155,11 @@ public class ClassInfo {
 		
 		for(VariableDeclarationFragment var : fieldVars) {
 			Set<MethodDeclaration> set = cohesionMap.get(var);
-			if(set != null)
+			if(set != null) {
 				System.out.println(var.getName().getFullyQualifiedName() + " is accessed in " + cohesionMap.get(var).size() + " methods");
-			else
+			} else {
 				System.err.println("Cannot calcurate LCOM of " + var.getName().getIdentifier());
+			}
 		}
 		return 0;
 	}

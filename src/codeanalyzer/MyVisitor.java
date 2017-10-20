@@ -262,12 +262,16 @@ public class MyVisitor extends ASTVisitor {
 		for(SimpleName node : names) {
 			if(ASTUtil.parentMethodOf(node) == null) continue;
 			
-			for(Entry<String, VariableDeclarationFragment> e : fieldVars.entrySet()) {
+			flag: for(Entry<String, VariableDeclarationFragment> e : fieldVars.entrySet()) {
 				VariableDeclarationFragment var = (VariableDeclarationFragment) e.getValue();
 				if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
 					for(VariableDeclarationFragment nf : nonFieldVars) {
 						if(nf.getName().toString().equals(var.getName().toString())) {
-							System.out.println("dublicaple name " + nf.getName().toString());
+							//System.out.println("dublicaple name " + nf.getName().toString());
+							if(ASTUtil.parentMethodOf(node).equals(ASTUtil.parentMethodOf(nf)) && !ASTUtil.parentMethodOf(node).toString().contains("this." + var)) {
+								//System.out.println("The name " + var.getName() + " is not a field in " + ASTUtil.parentMethodOf(node));
+								continue flag;
+							}
 						}
 					}
 					if(cohesionMap.get(var) == null) {
