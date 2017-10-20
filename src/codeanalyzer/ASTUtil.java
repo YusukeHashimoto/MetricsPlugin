@@ -3,7 +3,6 @@ package codeanalyzer;
 import org.eclipse.jdt.core.dom.*;
 
 public class ASTUtil {
-	//private ASTNode parent;
 	
 	static MethodDeclaration parentMethodOf(ASTNode node) {
 		ASTNode parent = node.getParent();

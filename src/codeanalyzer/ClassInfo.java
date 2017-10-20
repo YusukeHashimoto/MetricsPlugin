@@ -150,18 +150,24 @@ public class ClassInfo {
 		return noc;
 	}
 	
-	public int lackOfCohesionInMethods() {
+	public double lackOfCohesionInMethods() {
 		System.out.println("\t class " + className);
-		
+		double x = 0;
 		for(VariableDeclarationFragment var : fieldVars) {
 			Set<MethodDeclaration> set = cohesionMap.get(var);
 			if(set != null) {
 				System.out.println(var.getName().getFullyQualifiedName() + " is accessed in " + cohesionMap.get(var).size() + " methods");
+				x += cohesionMap.get(var).size();
 			} else {
 				System.err.println("Cannot calcurate LCOM of " + var.getName().getIdentifier());
 			}
 		}
-		return 0;
+		if(fieldVars.isEmpty()) return 0;
+		x /= fieldVars.size();
+		x -= methodDeclarations.size();
+		x /= 1 - methodDeclarations.size();
+		System.err.println(className + " " + x);
+		return x;
 	}
 	
 	@Override

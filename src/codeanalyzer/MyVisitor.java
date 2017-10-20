@@ -166,6 +166,10 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		if((node.getModifiers() & Modifier.PUBLIC) == 0) {
+			return super.visit(node);
+		}
+		
 		className = node.getName().toString();
 		isAbstract = (node.getModifiers() == 1024);
 		try {
@@ -175,8 +179,6 @@ public class MyVisitor extends ASTVisitor {
 		} catch(UnsupportedOperationException e) {
 			
 		}
-		//if(isAbstract) System.out.println("This is abstract class.");
-		
 		return super.visit(node);
 	}
 	
@@ -196,33 +198,6 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SimpleName node) {
 		names.add(node);
-		/*
-		if(ASTUtil.parentMethodOf(node) == null) return super.visit(node);
-		
-		//List<VariableDeclarationFragment> 
-		fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toList());
-		List<VariableDeclarationFragment> localVars = new ArrayList<VariableDeclarationFragment>(variableList); // contains parameters
-		localVars.removeAll(fieldVars);
-		
-		//Map<String, VariableDeclarationFragment>
-		fieldVarMap = variableList.stream().filter(v -> ASTUtil.isField(v) && ASTUtil.definedClassOf(node).getName().toString().equals(className))
-				.collect(Collectors.toMap(VariableDeclarationFragment::toString, v -> v));
-		
-		for(VariableDeclarationFragment var : fieldVars) {
-			if(!fieldVarMap.containsValue(var)) {
-				System.out.println(var + " is not a field");
-			}
-			if(!ASTUtil.isField(var)) {
-				System.out.println(var + " is not a field");
-			}
-			if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
-				//if(fieldVarMap.containsKey(var.toString())) continue;
-				if(cohesionMap.get(var) == null) {
-					cohesionMap.put(var, new HashSet<MethodDeclaration>());
-				}
-				cohesionMap.get(var).add(ASTUtil.parentMethodOf(node));
-			}
-		}*/
 		return super.visit(node);
 	}
 	
@@ -246,9 +221,6 @@ public class MyVisitor extends ASTVisitor {
 
 	public ClassInfo newClassInfo() {
 		generateCohesionMap();
-		//Set<VariableDeclarationFragment> 
-		//fieldVars = variableList.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
-		
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
 				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass)
 				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars).build();
@@ -267,9 +239,7 @@ public class MyVisitor extends ASTVisitor {
 				if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
 					for(VariableDeclarationFragment nf : nonFieldVars) {
 						if(nf.getName().toString().equals(var.getName().toString())) {
-							//System.out.println("dublicaple name " + nf.getName().toString());
 							if(ASTUtil.parentMethodOf(node).equals(ASTUtil.parentMethodOf(nf)) && !ASTUtil.parentMethodOf(node).toString().contains("this." + var)) {
-								//System.out.println("The name " + var.getName() + " is not a field in " + ASTUtil.parentMethodOf(node));
 								continue flag;
 							}
 						}
