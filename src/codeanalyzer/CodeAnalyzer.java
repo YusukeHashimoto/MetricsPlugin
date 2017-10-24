@@ -59,7 +59,7 @@ public class CodeAnalyzer {
 
 		String formattedCode = MyParser.format(rawCode);
 
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
 		parser.setSource(formattedCode.toCharArray());
 		
@@ -182,7 +182,7 @@ public class CodeAnalyzer {
 		MyVisitor visitor = new MyVisitor(rawCode);
 		List<VariableDeclarationFragment> varList = formattedVisitor.getVariableList();
 
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setSource(rawCode.toCharArray());
 		CompilationUnit unit = (CompilationUnit) parser.createAST(new NullProgressMonitor());
 		unit.accept(visitor);
@@ -196,7 +196,7 @@ public class CodeAnalyzer {
 		MyVisitor visitor = new MyVisitor(rawCode);
 		List<MethodDeclaration> methList = formattedVisitor.getMethodList();
 
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setSource(rawCode.toCharArray());
 		CompilationUnit unit = (CompilationUnit) parser.createAST(new NullProgressMonitor());
 		unit.accept(visitor);
