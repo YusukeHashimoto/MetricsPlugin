@@ -231,27 +231,22 @@ public class MyVisitor extends ASTVisitor {
 				.collect(Collectors.toMap(VariableDeclarationFragment::toString, v -> v));
 		List<VariableDeclarationFragment> nonFieldVars = variableList.stream().filter(v -> !fieldVars.containsValue(v)).collect(Collectors.toList());
 
-		for(SimpleName node : names) {
-			if(ASTUtil.parentMethodOf(node) == null) continue;
-			
-			flag: for(Entry<String, VariableDeclarationFragment> e : fieldVars.entrySet()) {
+		names.stream().filter(n -> ASTUtil.parentMethodOf(n) != null).forEach(node -> {
+			for(Entry<String, VariableDeclarationFragment> e : fieldVars.entrySet()) {
 				VariableDeclarationFragment var = (VariableDeclarationFragment) e.getValue();
 				if(var.getName().getFullyQualifiedName().equals(node.getFullyQualifiedName()) && ASTUtil.definedClassOf(var).equals(ASTUtil.definedClassOf(node))) {
-					for(VariableDeclarationFragment nf : nonFieldVars) {
-						if(nf.getName().toString().equals(var.getName().toString())) {
-							if(ASTUtil.parentMethodOf(node).equals(ASTUtil.parentMethodOf(nf)) && !ASTUtil.parentMethodOf(node).toString().contains("this." + var)) {
-								continue flag;
-							}
-						}
-					}
+					if(nonFieldVars.stream().filter(nf -> nf.getName().toString().equals(var.getName().toString()))
+							.filter(nf -> ASTUtil.parentMethodOf(node).equals(ASTUtil.parentMethodOf(nf)))
+							.anyMatch(nf -> !ASTUtil.parentMethodOf(node).toString().contains("this." + var))) 
+						continue;
+					
 					if(cohesionMap.get(var) == null) {
 						cohesionMap.put(var, new HashSet<MethodDeclaration>());
 					}
 					cohesionMap.get(var).add(ASTUtil.parentMethodOf(node));
-				
 				}
 			}
-		}
+		});
 		this.fieldVars = new HashSet<VariableDeclarationFragment>(fieldVars.values());
 		System.out.println();
 	}
