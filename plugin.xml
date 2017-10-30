@@ -51,5 +51,38 @@
             name="MyTextEditor">
       </editor>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.menus">
+         <menuContribution 	
+    locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+    <menu id="nu.mine.kino.plugin.newaction.menus.sampleMenu"  label="Metrics">
+      <command commandId="metrics.sample" 
+        label="Inheritance Tree" style="push">
+      </command>
+      <separator name="sepa02" visible="true" />
+      <command commandId="nu.mine.kino.plugin.samples.rcp.command" 
+        label="Dependance Graph" style="push">
+      </command>
+    </menu>
+  	</menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="サンプル・カテゴリー"
+            id="com.example.eclipse.plugin.hello2.commands.category">
+      </category>
+      <command
+            name="サンプル・コマンド"
+            categoryId="com.example.eclipse.plugin.hello2.commands.category"
+            id="com.example.eclipse.plugin.hello2.commands.sampleCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="metrics.sample"
+            class="metricsplugin.handler.MyHandler">
+      </handler>
+   </extension>
 </plugin>

@@ -53,7 +53,7 @@ public class SampleView extends ViewPart {
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
-	 
+
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object obj, int index) {
 			return getText(obj);
@@ -78,7 +78,7 @@ public class SampleView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		
+
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setInput(calc().toArray());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -93,6 +93,8 @@ public class SampleView extends ViewPart {
 
 		//refresh warnings when code has changed
 		ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
+		
+		//WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?Animal=Object");
 	}
 
 	private void hookContextMenu() {
@@ -126,7 +128,7 @@ public class SampleView extends ViewPart {
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	
+
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(action1);
 		manager.add(action2);
@@ -141,8 +143,8 @@ public class SampleView extends ViewPart {
 		action1.setText("Action 1");
 		action1.setToolTipText("Action 1 tooltip");
 		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
+				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+
 		action2 = new Action() {
 			public void run() {
 				showMessage("Action 2 executed");
@@ -152,13 +154,13 @@ public class SampleView extends ViewPart {
 		action2.setToolTipText("Action 2 tooltip");
 		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
+
 		doubleClickAction = new Action() {
 			public void run() {
 				//refresh();
 				ISelection selection = viewer.getSelection();
 				Object obj = ((IStructuredSelection)selection).getFirstElement();
-								
+
 				for(int i = 0; i < viewer.getTable().getItemCount(); i++) {
 					if(obj.toString().equals(viewer.getElementAt(i))) {
 						openInEditor(warnings.get(i).getFilename());
@@ -175,24 +177,24 @@ public class SampleView extends ViewPart {
 				IFile openedFile = ((IFileEditorInput)ProjectUtil.activeEditor().getEditorInput()).getFile();
 				IProject project = openedFile.getProject();
 				String projectName = project.toString().substring(1);
-				
+
 				String relativePath = filename.substring(filename.indexOf(projectName));
 				IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(relativePath));
-				
+
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
 					//e.printStackTrace();
 				}
 			}
-			
+
 			private void markLine(int line) {
 				IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
 				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
-				
+
 				Map<String, Integer> attributes = new HashMap<>();
 				attributes.put(IMarker.LINE_NUMBER, new Integer(line));
-				
+
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
@@ -208,12 +210,12 @@ public class SampleView extends ViewPart {
 	private void hookDoubleClickAction() {
 		viewer.addDoubleClickListener(e -> doubleClickAction.run());
 	}
-	
+
 	private void showMessage(String message) {
 		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Sample View",
-			message);
+				viewer.getControl().getShell(),
+				"Sample View",
+				message);
 	}
 
 	/**
@@ -222,16 +224,16 @@ public class SampleView extends ViewPart {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
+
 	private List<Warning> warnings;
-	
+
 	private List<String> calc() {
 		//IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
 		//IFile file = editorInput.getFile();
 
 		CodeAnalyzer ca = new CodeAnalyzer();
 		//String src = file.getLocationURI().getPath();
-		
+
 		try {
 			//ca.run(parentDirOf(src).substring(1));
 			ca.run(ProjectUtil.pathToPackage().substring(1));
@@ -240,7 +242,7 @@ public class SampleView extends ViewPart {
 			ca.run(ProjectUtil.pathToPackage());
 		}
 		analyze();
-		
+
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
@@ -254,7 +256,7 @@ public class SampleView extends ViewPart {
 		System.err.println("Input URI does not contain '/', it is not directory URI.");
 		return null;
 	}
-*/
+	 */
 	@Override
 	public Object getAdapter(Class arg0) {
 		return super.getAdapter(arg0);
@@ -263,17 +265,17 @@ public class SampleView extends ViewPart {
 	private AbstractTextEditor currentEditor() {
 		return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 	}
-	*/
+	 */
 	private void refresh() {
 		viewer.setInput(calc());
 		//viewer.setInput(analyze());
 	}
-	
+
 	private List<String> analyze() {/*
 		IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
 		IFile file = editorInput.getFile();
 		String filepath = file.getLocationURI().getPath();
-		*/
+	 */
 		String filepath = ProjectUtil.editingFile().getLocationURI().getPath();
 		IJavaProject ijp = JavaCore.create(ProjectUtil.currentProject());
 		IType type;
@@ -297,11 +299,11 @@ public class SampleView extends ViewPart {
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
-		*/
+		 */
 		CodeAnalyzer ca = new CodeAnalyzer();
 		//ca.analyzeCodes(type.getCompilationUnit(), ProjectUtil.pathToPackage());//filepath);
 		ca.analyzeCodes(null, ProjectUtil.pathToPackage());//filepath);
-		
+
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}

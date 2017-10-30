@@ -251,4 +251,8 @@ public class ClassInfo {
 		
 		init();
 	}
+	
+	public String toURLParameter() {
+		return className + "=" + superclassName;
+	}
 }
