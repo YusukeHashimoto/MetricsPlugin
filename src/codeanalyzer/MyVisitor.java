@@ -166,9 +166,11 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		if((node.getModifiers() & Modifier.PUBLIC) == 0) {
+		if(((node.getModifiers() & Modifier.PUBLIC) == 0) && ((node.getModifiers() & Modifier.ABSTRACT) == 0)) {
 			return super.visit(node);
 		}
+		if(className != null)
+			return super.visit(node);
 		
 		className = node.getName().toString();
 		isAbstract = (node.getModifiers() == 1024);

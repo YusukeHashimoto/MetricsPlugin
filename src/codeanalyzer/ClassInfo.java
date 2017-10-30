@@ -253,6 +253,6 @@ public class ClassInfo {
 	}
 	
 	public String toURLParameter() {
-		return className + "=" + superclassName;
+		return className + "=" + ((superclassName != null) ? superclassName : "Object");
 	}
 }

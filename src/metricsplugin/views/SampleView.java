@@ -228,6 +228,10 @@ public class SampleView extends ViewPart {
 	private List<Warning> warnings;
 
 	private List<String> calc() {
+		/*
+		if(ProjectUtil.activeEditor() instanceof AbstractTextEditor) 
+			return new ArrayList<String>();
+		 */
 		//IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
 		//IFile file = editorInput.getFile();
 
@@ -241,7 +245,7 @@ public class SampleView extends ViewPart {
 			//ca.run(parentDirOf(src));
 			ca.run(ProjectUtil.pathToPackage());
 		}
-		analyze();
+		//analyze();
 
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
@@ -267,6 +271,7 @@ public class SampleView extends ViewPart {
 	}
 	 */
 	private void refresh() {
+		
 		viewer.setInput(calc());
 		//viewer.setInput(analyze());
 	}

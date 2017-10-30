@@ -1,6 +1,6 @@
 package codeanalyzer.test;
 
-public class Animal {
+abstract class Animal {
 	
 	public void eat(Food food) {
 		if(canEat(food)) {

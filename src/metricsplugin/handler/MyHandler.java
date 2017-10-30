@@ -28,7 +28,10 @@ public class MyHandler extends AbstractHandler {
 		}
 
 		classMap = ca.getClassInfo();
-		WebViewer.showInternalBrowser("http://google.com");
+		StringBuilder url = new StringBuilder("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?");
+		classMap.entrySet().stream().map(e -> e.getValue()).forEach(v -> url.append(v.toURLParameter() + '&'));
+		//WebViewer.showInternalBrowser("http://google.com");
+		WebViewer.showInternalBrowser(url.toString());
 		return null;
 	}
 

@@ -35,7 +35,7 @@ public class WebViewer {
 			IWebBrowser browser;
 			try {
 				browser = browserSupport.createBrowser(
-						0,
+						IWorkbenchBrowserSupport.LOCATION_BAR,
 						"id1",
 						"Inheritance tree",
 						"Inheritance tree"
