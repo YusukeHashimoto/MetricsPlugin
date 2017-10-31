@@ -123,7 +123,7 @@ public class CodeAnalyzer {
 		}
 		ICompilationUnit unit = type.getCompilationUnit();
 		
-		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setSource(unit);
 		parser.setResolveBindings(true); // Analyze with level 2 to collect detail information
 		ASTNode node = parser.createAST(new NullProgressMonitor());

@@ -22,15 +22,23 @@ public class MyHandler extends AbstractHandler {
 			"Hello, Eclipse world");*/
 		CodeAnalyzer ca = new CodeAnalyzer();
 		try {
-			ca.run(ProjectUtil.pathToPackage().substring(1));
+			//ca.run(ProjectUtil.pathToPackage().substring(1));
+			ca.analyzeCodes(null, ProjectUtil.pathToPackage().substring(1));
 		} catch(Exception e) {
-			ca.run(ProjectUtil.pathToPackage());
+			//ca.run(ProjectUtil.pathToPackage());
+			ca.analyzeCodes(null, ProjectUtil.pathToPackage());
 		}
 
 		classMap = ca.getClassInfo();
 		StringBuilder url = new StringBuilder("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?");
 		classMap.entrySet().stream().map(e -> e.getValue()).forEach(v -> url.append(v.toURLParameter() + '&'));
-		//WebViewer.showInternalBrowser("http://google.com");
+		/*
+		for(Entry<String, ClassInfo> e : classMap.entrySet()) {
+			for(String name : e.getValue().efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS)) {
+				url.append(e.getValue().getClassName() + "=" + name + "&");
+			}
+		}*/
+
 		WebViewer.showInternalBrowser(url.toString());
 		return null;
 	}
