@@ -27,13 +27,14 @@ public class CodeAnalyzer {
 	}
 	
 	public void run(String... pathsToPackage) {
+		
 		for(String path: pathsToPackage) {
 			run(path);
 		}
 		Log.print(Log.INFO);
 	}
 
-	public void run(String pathToPackage) {
+	private void run(String pathToPackage) {
 		List<String> classList = FileUtil.getSourceCodeList(pathToPackage);
 		Log.info("number of classes in the package: " + classList.size());
 

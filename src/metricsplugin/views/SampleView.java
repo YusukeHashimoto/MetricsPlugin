@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -93,7 +92,7 @@ public class SampleView extends ViewPart {
 
 		//refresh warnings when code has changed
 		ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
-		
+
 		//WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?Animal=Object");
 	}
 
@@ -228,86 +227,26 @@ public class SampleView extends ViewPart {
 	private List<Warning> warnings;
 
 	private List<String> calc() {
-		/*
-		if(ProjectUtil.activeEditor() instanceof AbstractTextEditor) 
-			return new ArrayList<String>();
-		 */
-		//IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
-		//IFile file = editorInput.getFile();
-
 		CodeAnalyzer ca = new CodeAnalyzer();
-		//String src = file.getLocationURI().getPath();
-
-		try {
-			//ca.run(parentDirOf(src).substring(1));
-			ca.run(ProjectUtil.pathToPackage().substring(1));
-		} catch(Exception e) {
-			//ca.run(parentDirOf(src));
-			ca.run(ProjectUtil.pathToPackage());
-		}
+		//try {
+		ca.run(ProjectUtil.pathToPackage());
+		//} catch(Exception e) {
+		//ca.run(ProjectUtil.pathToPackage().substring(1));
+		//}
 		//analyze();
 
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
-	/*
-	private static String parentDirOf(String filePath) {
-		for(int i = filePath.length()-1; i > 1; i--) {
-			if(filePath.charAt(i) == '/') {
-				return filePath.substring(0, i+1);
-			}
-		}
-		System.err.println("Input URI does not contain '/', it is not directory URI.");
-		return null;
-	}
-	 */
-	@Override
-	public Object getAdapter(Class arg0) {
-		return super.getAdapter(arg0);
-	}
-	/*
-	private AbstractTextEditor currentEditor() {
-		return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-	}
-	 */
+
 	private void refresh() {
-		
 		viewer.setInput(calc());
 		//viewer.setInput(analyze());
 	}
 
-	private List<String> analyze() {/*
-		IFileEditorInput editorInput = (IFileEditorInput)ProjectManager.activeEditor().getEditorInput();
-		IFile file = editorInput.getFile();
-		String filepath = file.getLocationURI().getPath();
-	 */
-		String filepath = ProjectUtil.editingFile().getLocationURI().getPath();
-		IJavaProject ijp = JavaCore.create(ProjectUtil.currentProject());
-		IType type;
-		int begin = filepath.lastIndexOf('/') + 1;
-		int end = filepath.lastIndexOf('.');
-		String classname = filepath.substring(begin, end);
-		/*
-		try {
-			type = ijp.findType(classname);	//fix later
-		} catch (JavaModelException e) {
-			return null;
-		}
-		if (type == null) {
-			System.err.println("Cannot find class \'" + classname + "\'");
-			return null;	// 見つからなかった
-		}/*
-		try {
-			if (type.isClass()) {
-				// クラス
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		 */
+	private List<String> analyze() {
 		CodeAnalyzer ca = new CodeAnalyzer();
-		//ca.analyzeCodes(type.getCompilationUnit(), ProjectUtil.pathToPackage());//filepath);
-		ca.analyzeCodes(null, ProjectUtil.pathToPackage());//filepath);
+		ca.analyzeCodes(null, ProjectUtil.pathToPackage());
 
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());

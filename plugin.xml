@@ -60,7 +60,7 @@
         label="Inheritance Tree" style="push">
       </command>
       <separator name="sepa02" visible="true" />
-      <command commandId="nu.mine.kino.plugin.samples.rcp.command" 
+      <command commandId="metrics.dependencegraph"
         label="Dependance Graph" style="push">
       </command>
     </menu>
@@ -82,7 +82,11 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="metrics.sample"
-            class="metricsplugin.handler.MyHandler">
+            class="metricsplugin.handler.InheritanceTreeHandler">
+      </handler>
+      <handler
+      		commandId="metrics.dependencegraph"
+      		class="metricsplugin.handler.DependenseGraphHandler">
       </handler>
    </extension>
 </plugin>
