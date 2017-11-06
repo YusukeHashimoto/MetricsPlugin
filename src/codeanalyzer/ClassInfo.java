@@ -19,14 +19,15 @@ public class ClassInfo {
 	private String superclassName;
 	private boolean isAbstractClass = false;
 	private List<MethodInvocation> methodInvocations;
-	private Set<String> recievers;
+	private Set<String> recievers = new HashSet<String>();
 	private String packageName;
 	private String className;
-	private List<String> parameters;
+	private List<SingleVariableDeclaration> parameters;
 	private List<VariableDeclarationFragment> varDecls;
 	private Set<VariableDeclarationFragment> fieldVars;
 	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap;
 	private Set<VariableDeclarationFragment> localVars;
+	private Set<Type> exceptions = new HashSet<>();
 	
 	private ClassInfo superclass;
 	private Set<ClassInfo> subclasses = new HashSet<>();
@@ -42,10 +43,12 @@ public class ClassInfo {
 		superclassName = visitor.getSuperClass();
 		isAbstractClass = visitor.isAbstract();
 		methodInvocations = visitor.getMethodInvocations();
-		parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
+		//parameters = visitor.getParameters().stream().map(p -> p.getName().toString()).collect(Collectors.toList());
+		parameters = visitor.getParameters();
 		varDecls = visitor.getVariableList();
 		fieldVars = varDecls.stream().filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)).collect(Collectors.toSet());
 		cohesionMap = visitor.getCohesionMap();
+		exceptions = visitor.getExceptions();
 		
 		init();
 	}
@@ -106,6 +109,12 @@ public class ClassInfo {
 	}
 
 	public Set<String> efficientCouplings(int couplingLevel) {
+		Set<String> recievers = new HashSet<String>();
+		recievers.addAll(this.recievers);
+		parameters.stream().map(p -> p.getType().toString()).filter(p -> !premitives.contains(p)).forEach(p -> recievers.add(p));
+		recievers.add(superclassName);
+		exceptions.stream().map(e -> e.toString()).forEach(e -> recievers.add(e));
+				
 		if(recievers != null && !recievers.isEmpty()) {
 			if(couplingLevel == COUPLING_LEVEL_CLASS) {
 				return recievers.stream().filter(p -> !p.equals(packageName + '.' + className)).collect(Collectors.toSet());
@@ -186,6 +195,8 @@ public class ClassInfo {
 		private List<VariableDeclarationFragment> varList;
 		private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap;
 		private Set<VariableDeclarationFragment> fieldVars;
+		private List<SingleVariableDeclaration> parameters;
+		private Set<Type> exceptions;
 		
 		public Builder(String filename, String packagename) {
 			this.filename = filename;
@@ -232,6 +243,16 @@ public class ClassInfo {
 			return this;
 		}
 		
+		public Builder parameters(List<SingleVariableDeclaration> parameters) {
+			this.parameters = parameters;
+			return this;
+		}
+		
+		public Builder exceptions(Set<Type> exceptions) {
+			this.exceptions = exceptions;
+			return this;
+		}
+		
 		public ClassInfo build() {
 			return new ClassInfo(this);
 		}
@@ -248,11 +269,27 @@ public class ClassInfo {
 		this.varDecls = builder.varList;
 		this.cohesionMap = builder.cohesionMap;
 		this.fieldVars = builder.fieldVars;
+		this.parameters = builder.parameters;
+		this.exceptions = builder.exceptions;
 		
 		init();
 	}
 	
 	public String toURLParameter() {
 		return className + "=" + ((superclassName != null) ? superclassName : "Object");
+	}
+	
+	private static Set<String> premitives;
+	{
+		premitives = new HashSet<String>();
+		premitives.add("int");
+		premitives.add("float");
+		premitives.add("double");
+		premitives.add("long");
+		premitives.add("char");
+		premitives.add("String");
+		premitives.add("byte");
+		premitives.add("short");
+		premitives.add("boolean");
 	}
 }

@@ -27,6 +27,11 @@ public class MyVisitor extends ASTVisitor {
 	private List<SingleVariableDeclaration> parameters = new ArrayList<>();
 	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap = new HashMap<>();
 	private List<SimpleName> names = new ArrayList<>();
+	private Set<Type> exceptions = new HashSet<>();
+
+	public Set<Type> getExceptions() {
+		return exceptions;
+	}
 
 	public Map<VariableDeclarationFragment, Set<MethodDeclaration>> getCohesionMap() {
 		return cohesionMap;
@@ -83,6 +88,7 @@ public class MyVisitor extends ASTVisitor {
 		methodList.add(node);
 		
 		parameters.addAll(node.parameters());
+		exceptions.addAll(node.thrownExceptionTypes());
 		return super.visit(node);
 	}
 
@@ -229,7 +235,8 @@ public class MyVisitor extends ASTVisitor {
 		generateCohesionMap();
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
 				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass)
-				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars).build();
+				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars)
+				.parameters(parameters).exceptions(exceptions).build();
 	}
 	
 	private void generateCohesionMap() {
