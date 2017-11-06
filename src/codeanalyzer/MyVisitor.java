@@ -74,7 +74,11 @@ public class MyVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		node.setProperty(LINE_COUNT, Integer.valueOf(countLines(node.getBody().toString())));
+		if(node.getBody() == null) {
+			node.setProperty(LINE_COUNT, 0);
+		} else {
+			node.setProperty(LINE_COUNT, Integer.valueOf(countLines(node.getBody().toString())));
+		}
 		node.setProperty(CYCLOMATIC_COMPLEXITY, 1);
 		methodList.add(node);
 		
