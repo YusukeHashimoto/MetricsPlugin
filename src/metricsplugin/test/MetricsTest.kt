@@ -2,22 +2,12 @@ package metricsplugin.test
 
 import codeanalyzer.ClassInfo
 import codeanalyzer.CodeAnalyzer
-import org.junit.BeforeClass
-import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.BeforeClass
+import org.junit.Ignore
+import org.junit.Test
 
 class MetricsTest {
-	/*
-	@Test
-	fun test() {
-		//val workspace = ResourcesPlugin.getWorkspace()
-		//val root = workspace!!.getRoot()
-		//val projects = root!!.getProjects()
-		val ca = CodeAnalyzer()
-		ca.analyzeCodes(null, "C:/Users/Hashimoto/runtime-EclipseApplication/sep3asm/src/lang/")
-		val animal = ca.getClassInfo().get("Compiler")
-		System.out.println(animal!!.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS))
-	}*/
 
 	@Test
 	fun testCBO() {
@@ -26,13 +16,40 @@ class MetricsTest {
 			assertEquals(CBOMap[it.value.className], it.value.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).size)
 		}
 	}
+	
+	@Ignore
+	@Test
+	fun testRFC() {
+		
+	}
+	
+	@Test
+	fun testDIT() {
+		infoMap.forEach {
+			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap))
+		}
+	}
+	
+	@Test
+	fun testNOC() {
+		infoMap.forEach {
+			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap))
+		}
+	}
+	
+	@Test
+	fun testWMC() {
+		infoMap.forEach {
+			assertEquals(WMCMap[it.value.className], it.value.weightedMethodsPerClass())
+		}
+	}
 
 	companion object {
 		private lateinit var infoMap: Map<String, ClassInfo>
-		//private val WMCMap = mapOf("Animal" to 5, "Food" to 0, "Dog" to 0, "Cat" to 0, "ToyPoodle" to 0)
+		private val WMCMap = mapOf("Inst2" to 12, "Line" to 5, "Operand" to 9, "Program" to 7)
 		private val CBOMap = mapOf("Inst2" to 10, "Line" to 4, "Operand" to 4, "Program" to 12)
-		//private val DITMap = mapOf("Animal" to 2, "Food" to 2, "Dog" to 3, "Cat" to 3, "ToyPoodle" to 4)
-		//private val NOCMap = mapOf("Animal" to 3, "Food" to 0, "Dog" to 1, "Cat" to 0, "ToyPoodle" to 0)
+		private val DITMap = mapOf("Inst2" to 3, "Line" to 3, "Operand" to 3, "Program" to 3)
+		private val NOCMap = mapOf("Inst2" to 0, "Line" to 0, "Operand" to 0, "Program" to 0)
 
 		@BeforeClass @JvmStatic
 		fun init() {
