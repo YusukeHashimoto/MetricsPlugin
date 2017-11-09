@@ -26,7 +26,7 @@ public class ProjectUtil {
 	
 	public static String pathToPackage() {
 		String pathToFile =  editingFile().getLocationURI().getPath();
-		if(pathToFile.charAt(0) == '/') pathToFile = pathToFile.substring(1);
+		if(pathToFile.charAt(0) == '/' && pathToFile.charAt(1) != 'U') pathToFile = pathToFile.substring(1);
 		return parentDirOf(pathToFile);
 	}
 	

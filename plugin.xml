@@ -89,4 +89,13 @@
       		class="metricsplugin.handler.DependenseGraphHandler">
       </handler>
    </extension>
+   <extension
+         point="org.jetbrains.kotlin.core.scriptTemplateProvider">
+   </extension>
+   <extension
+         point="org.jetbrains.kotlin.core.scriptTemplateProviderEx">
+   </extension>
+   <extension
+         point="org.jetbrains.kotlin.ui.editor.textHover">
+   </extension>
 </plugin>

@@ -4,6 +4,7 @@ import static java.util.Comparator.comparing;
 
 import java.util.*;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
@@ -112,6 +113,46 @@ public class CodeAnalyzer {
 	 */
 	void analyze2(String pathToPackage, String filename) {
 		IJavaProject project = JavaCore.create(ProjectUtil.currentProject());
+		IType type;
+		String classname = pathToPackage.substring(pathToPackage.lastIndexOf("/src/")+"/src/".length(), pathToPackage.length()) + 
+				filename.substring(0, filename.lastIndexOf(".java"));
+		
+		try {
+			type = project.findType(classname.replace('/', '.'));
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return;
+		}
+		ICompilationUnit unit = type.getCompilationUnit();
+		
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setSource(unit);
+		parser.setResolveBindings(true); // Analyze with level 2 to collect detail information
+		ASTNode node = parser.createAST(new NullProgressMonitor());
+		
+		String rawCode = Objects.requireNonNull(FileUtil.readSourceCode(pathToPackage + filename));
+		MyVisitor visitor = new MyVisitor(rawCode);
+		node.accept(visitor);
+		
+		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
+		
+		ClassInfo c = visitor.newClassInfo();
+		ci.put(c.getClassName(), c);
+		Log.info("packages used from " + pathToPackage + filename + " {");
+		c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
+		Log.info("}");
+		
+		Log.print(Log.INFO);
+		//Log.print();
+	}
+	
+	public void analyzeCodes22(ICompilationUnit unit, String pathToPackage, IProject iproject) {
+		List<String> codeList = FileUtil.getSourceCodeList(pathToPackage);
+		codeList.stream().forEach(s -> analyze22(pathToPackage, s, iproject));
+	}
+	
+	void analyze22(String pathToPackage, String filename, IProject iproject) {
+		IJavaProject project = JavaCore.create(iproject);
 		IType type;
 		String classname = pathToPackage.substring(pathToPackage.lastIndexOf("/src/")+"/src/".length(), pathToPackage.length()) + 
 				filename.substring(0, filename.lastIndexOf(".java"));

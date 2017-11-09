@@ -251,4 +251,10 @@ public class SampleView extends ViewPart {
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
+
+	@Override
+	public Object getAdapter(Class arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
