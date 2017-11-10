@@ -23,10 +23,12 @@ public class ASTUtil {
 	}
 
 	static AbstractTypeDeclaration definedClassOf(ASTNode node) {
+		if(node instanceof AbstractTypeDeclaration) return (AbstractTypeDeclaration)node;
 		ASTNode parent = node.getParent();
 		if(parent == null) return null;
 		while(!(parent instanceof AbstractTypeDeclaration)) {
 			parent = parent.getParent();
+			if(parent == null) return null;
 		}
 		return (AbstractTypeDeclaration)parent;
 	}
@@ -42,5 +44,9 @@ public class ASTUtil {
 		if(parent instanceof FieldDeclaration) 
 			return true;
 		else return false;
+	}
+	
+	static String definedClassnameOf(ASTNode node) {
+		return definedClassOf(node).getName().toString();
 	}
 }

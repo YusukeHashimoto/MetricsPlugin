@@ -3,13 +3,13 @@ package codeanalyzer
 import java.util.*
 import org.eclipse.jdt.core.dom.*
 import java.lang.AssertionError
+import java.lang.UnsupportedOperationException
 
-class Factory {
+class ClassFactory {
 	private class Prototype {
 		internal val methodList = arrayListOf<MethodDeclaration>()
 		internal val variableList = ArrayList<VariableDeclarationFragment>()
 		internal val blockList = ArrayList<Block>()
-		internal var parser: MyParser? = null
 		internal var cyclomaticComplexity = 1
 		internal var isAbstract = false
 		internal var superClass: String? = null
@@ -22,13 +22,18 @@ class Factory {
 		internal var names = arrayListOf<SimpleName>()
 		internal val exceptions = hashSetOf<Type>()
 
-		companion object {
-			internal val LINE_COUNT: String? = "line_count"
-			internal val LIFE_SPAN: String? = "life"
-			val DECLARED_LINE: String? = "declared_line"
-			internal val CYCLOMATIC_COMPLEXITY: String? = "mccabe"
-			//static final String LOCAL_VARIABLE = "local";
-			internal val DEFINITION_PLACE: String? = "def_place"
+		fun toClassInfo(): ClassInfo {
+			val builder = ClassInfo.Builder(filename, packagename)
+			builder.methodDeclarations(methodList)
+			builder.varList(variableList)
+			builder.methodInvocations(methodInvocations)
+			builder.isAbstract(isAbstract)
+			builder.superClass(superClass)
+			builder.className(className)
+			builder.parameters(parameters)
+			builder.exceptions(exceptions)
+			//builder.fieldVars()
+			return builder.build()
 		}
 	}
 
@@ -36,15 +41,20 @@ class Factory {
 	private fun prototypeOf(classname: String): Prototype {
 		return classMap[classname]!!
 	}
-	internal fun addNode(node: ASTNode?) {
-		addNode(ASTUtil.definedClassOf(node).name.toString(), node!!)
+	fun addNode(node: ASTNode?) {
+		if(ASTUtil.definedClassOf(node) != null)
+			addNode(ASTUtil.definedClassOf(node).name.toString(), node!!)
 	}
 
 	internal fun addNode(classname: String, node: ASTNode) {
 		if(node is TypeDeclaration) {
 			classMap.put(classname, Prototype())
 			classMap.get(classname)?.className = classname
-			prototypeOf(classname).superClass = node.superclassType.toString()
+			try {
+				prototypeOf(classname).superClass = node.superclassType?.toString()
+			} catch(e: UnsupportedOperationException) {
+				
+			}
 		} else if(node is MethodDeclaration) {
 			prototypeOf(classname).methodList.add(node)
 		} else if(node is Block) {
@@ -62,8 +72,12 @@ class Factory {
 		}
 	}
 	
-	fun incrementCC(classname: String) {
-		prototypeOf(classname).cyclomaticComplexity++
+	fun addParameters(classname: String, parameters: List<SingleVariableDeclaration>) {
+		prototypeOf(classname).parameters.addAll(parameters)
+	}
+	
+	fun incrementCC(node: ASTNode) {
+		classMap.filter{it.value.methodList.contains(ASTUtil.parentMethodOf(node))}.forEach{it.value.cyclomaticComplexity++}
 	}
 	
 	fun setAbstract(classname: String, isAbstract: Boolean) {
@@ -74,13 +88,13 @@ class Factory {
 		prototypeOf(classname).exceptions.addAll(exceptions)
 	}
 	
-	fun setPackagename(classname: String, packagename: String) {
-		prototypeOf(classname).packagename = packagename
+	fun setPackagename(packagename: String) {
+		classMap.forEach { it.value.packagename = packagename }
 	}
 	
 	fun setFilename(filename: String) {
-		classMap.forEach {
-			it.value.filename = filename
-		}
+		classMap.forEach { it.value.filename = filename }
 	}
+	
+	fun toClassInfo(): List<ClassInfo> = classMap.map { it.value.toClassInfo() }
 }

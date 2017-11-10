@@ -28,6 +28,8 @@ public class MyVisitor extends ASTVisitor {
 	private Map<VariableDeclarationFragment, Set<MethodDeclaration>> cohesionMap = new HashMap<>();
 	private List<SimpleName> names = new ArrayList<>();
 	private Set<Type> exceptions = new HashSet<>();
+	
+	private ClassFactory classFactory = new ClassFactory();
 
 	public Set<Type> getExceptions() {
 		return exceptions;
@@ -75,6 +77,7 @@ public class MyVisitor extends ASTVisitor {
 	MyVisitor(String code, String filename) {
 		this(code);
 		this.filename = filename;
+		classFactory.setFilename(filename);
 	}
 
 	@Override
@@ -86,9 +89,12 @@ public class MyVisitor extends ASTVisitor {
 		}
 		node.setProperty(CYCLOMATIC_COMPLEXITY, 1);
 		methodList.add(node);
+		classFactory.addNode(node);
 		
 		parameters.addAll(node.parameters());
+		classFactory.addParameters(ASTUtil.definedClassnameOf(node), node.parameters());
 		exceptions.addAll(node.thrownExceptionTypes());
+		classFactory.addExceptions(ASTUtil.definedClassnameOf(node), node.thrownExceptionTypes());
 		return super.visit(node);
 	}
 
@@ -97,18 +103,21 @@ public class MyVisitor extends ASTVisitor {
 		node.setProperty(LIFE_SPAN, parser.lifeSpanOf(node));
 		node.setProperty(DEFINITION_PLACE, ASTUtil.definitionPlaceOf(node));
 		variableList.add(node);
+		classFactory.addNode(node);
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(Block node) {
 		blockList.add(node);
+		classFactory.addNode(node);
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(IfStatement node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -116,6 +125,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchCase node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -123,6 +133,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(WhileStatement node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -130,6 +141,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ForStatement node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 
@@ -138,6 +150,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(CatchClause node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -145,6 +158,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(EnhancedForStatement node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -152,6 +166,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ConditionalExpression node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -162,6 +177,7 @@ public class MyVisitor extends ASTVisitor {
 		if(operator == InfixExpression.Operator.CONDITIONAL_AND
 				|| operator == InfixExpression.Operator.CONDITIONAL_OR) {
 			cyclomaticComplexity++;
+			classFactory.incrementCC(node);
 			incrementCC(ASTUtil.parentMethodOf(node));
 		}
 		return super.visit(node);
@@ -170,6 +186,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(DoStatement node) {
 		cyclomaticComplexity++;
+		classFactory.incrementCC(node);
 		incrementCC(ASTUtil.parentMethodOf(node));
 		return super.visit(node);
 	}
@@ -183,6 +200,7 @@ public class MyVisitor extends ASTVisitor {
 			return super.visit(node);
 		
 		className = node.getName().toString();
+		classFactory.addNode(node);
 		isAbstract = (node.getModifiers() == 1024);
 		try {
 			if(node.getSuperclassType() != null) {
@@ -197,6 +215,7 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodInvocation node) {
 		methodInvocations.add(node);
+		classFactory.addNode(node);
 		//System.out.println("\t" + node.toString());
 		return super.visit(node);
 	}
@@ -204,12 +223,14 @@ public class MyVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(PackageDeclaration node) {
 		packagename = node.getName().toString();
+		classFactory.setPackagename(node.getName().toString());
 		return super.visit(node);
 	}
 	
 	@Override
 	public boolean visit(SimpleName node) {
 		names.add(node);
+		classFactory.addNode(node);
 		return super.visit(node);
 	}
 	
