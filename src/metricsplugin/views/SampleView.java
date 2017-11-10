@@ -246,7 +246,7 @@ public class SampleView extends ViewPart {
 
 	private List<String> analyze() {
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.analyzeCodes(null, ProjectUtil.pathToPackage());
+		ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
 
 		warnings = ca.getWarnings();
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
