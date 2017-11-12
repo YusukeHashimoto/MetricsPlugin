@@ -21,6 +21,7 @@ class ClassFactory {
 		internal val cohesionMap: Map<VariableDeclarationFragment, Set<MethodDeclaration>>? = HashMap()
 		internal var names = arrayListOf<SimpleName>()
 		internal val exceptions = hashSetOf<Type>()
+		internal val fieldVars = hashSetOf<VariableDeclarationFragment>()
 
 		fun toClassInfo(): ClassInfo {
 			val builder = ClassInfo.Builder(filename, packagename)
@@ -32,18 +33,21 @@ class ClassFactory {
 			builder.className(className)
 			builder.parameters(parameters)
 			builder.exceptions(exceptions)
-			//builder.fieldVars()
+			builder.fieldVars(fieldVars)
 			return builder.build()
 		}
 	}
 
 	private val classMap = HashMap<String, Prototype>()
 	private fun prototypeOf(classname: String): Prototype {
+		if(classMap[classname] == null) {
+			val x = 0;
+		}
 		return classMap[classname]!!
 	}
-	fun addNode(node: ASTNode?) {
+	fun addNode(node: ASTNode) {
 		if(ASTUtil.definedClassOf(node) != null)
-			addNode(ASTUtil.definedClassOf(node).name.toString(), node!!)
+			addNode(ASTUtil.definedClassOf(node).name.toString(), node)
 	}
 
 	internal fun addNode(classname: String, node: ASTNode) {
@@ -94,6 +98,10 @@ class ClassFactory {
 	
 	fun setFilename(filename: String) {
 		classMap.forEach { it.value.filename = filename }
+	}
+	
+	fun fieldVars(classname: String, fieldVars: List<VariableDeclarationFragment>) {
+		prototypeOf(classname).fieldVars.addAll(fieldVars)
 	}
 	
 	fun toClassInfo(): List<ClassInfo> = classMap.map { it.value.toClassInfo() }

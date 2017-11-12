@@ -193,6 +193,7 @@ public class MyVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
+		classFactory.addNode(node);
 		if(((node.getModifiers() & Modifier.PUBLIC) == 0) && ((node.getModifiers() & Modifier.ABSTRACT) == 0)) {
 			return super.visit(node);
 		}
@@ -200,7 +201,6 @@ public class MyVisitor extends ASTVisitor {
 			return super.visit(node);
 		
 		className = node.getName().toString();
-		classFactory.addNode(node);
 		isAbstract = (node.getModifiers() == 1024);
 		try {
 			if(node.getSuperclassType() != null) {
@@ -253,11 +253,17 @@ public class MyVisitor extends ASTVisitor {
 	private Set<VariableDeclarationFragment> fieldVars;
 
 	public ClassInfo newClassInfo() {
+		//return classFactory.toClassInfo().get(0);
+		
 		generateCohesionMap();
 		return new ClassInfo.Builder(filename, packagename).isAbstract(isAbstract)
 				.methodInvocations(methodInvocations).methodDeclarations(methodList).superClass(superClass)
 				.className(className).varList(variableList).cohesionMap(cohesionMap).fieldVars(fieldVars)
 				.parameters(parameters).exceptions(exceptions).build();
+	}
+	
+	public Set<ClassInfo> classInfoSet() {
+		return new HashSet<ClassInfo>(classFactory.toClassInfo());
 	}
 	
 	private void generateCohesionMap() {

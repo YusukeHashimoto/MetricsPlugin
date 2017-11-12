@@ -90,13 +90,16 @@ public class CodeAnalyzer {
 		
 		//ci.add(new ClassInfo(visitor, fileName));
 		
-		ClassInfo c = visitor.newClassInfo();
+		for(ClassInfo c : visitor.classInfoSet()) {
+		//ClassInfo c = visitor.newClassInfo();
 		ci.put(c.getClassName(), c);
+		System.out.println(c.getClassName());
 		
 		PackageInfo pi = new PackageInfo(pathToPackage, ci);
 		System.out.println();
+		}
+		//c.lackOfCohesionInMethods();
 		
-		c.lackOfCohesionInMethods();
 	}
 
 	public void analyzeCodes(ICompilationUnit unit, String pathToPackage, IProject iproject) {
@@ -138,11 +141,13 @@ public class CodeAnalyzer {
 		
 		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
 		
-		ClassInfo c = visitor.newClassInfo();
+		for(ClassInfo c : visitor.classInfoSet()) {
+		//ClassInfo c = visitor.newClassInfo();
 		ci.put(c.getClassName(), c);
 		Log.info("packages used from " + pathToPackage + filename + " {");
 		c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
 		Log.info("}");
+		}
 		
 		Log.print(Log.INFO);
 		//Log.print();
