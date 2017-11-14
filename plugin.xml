@@ -98,4 +98,14 @@
    <extension
          point="org.jetbrains.kotlin.ui.editor.textHover">
    </extension>
+   <extension
+         id="mymarker"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="true">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
 </plugin>

@@ -16,6 +16,10 @@ public class ClassInfo {
 	private String fileName;
 	private List<String> methodNames;
 	private List<MethodDeclaration> methodDeclarations;
+	public List<MethodDeclaration> getMethodDeclarations() {
+		return methodDeclarations;
+	}
+
 	private String superclassName;
 	private boolean isAbstractClass = false;
 	private List<MethodInvocation> methodInvocations;
@@ -112,7 +116,8 @@ public class ClassInfo {
 		Set<String> recievers = new HashSet<String>();
 		recievers.addAll(this.recievers);
 		parameters.stream().map(p -> p.getType().toString()).filter(p -> !premitives.contains(p)).forEach(p -> recievers.add(p));
-		recievers.add(superclassName);
+		if(superclassName != null)
+			recievers.add(superclassName);
 		exceptions.stream().map(e -> e.toString()).forEach(e -> recievers.add(e));
 				
 		if(recievers != null && !recievers.isEmpty()) {

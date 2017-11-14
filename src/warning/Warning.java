@@ -10,6 +10,7 @@ public abstract class Warning {
 	protected ASTNode node;
 	//protected String message;
 	private int line;
+	CompilationUnit unit;
 	
 	public static final int LARGE_METHOD = 0;
 	public static final int COMPLEX_METHOD = 1;
@@ -19,6 +20,7 @@ public abstract class Warning {
 		this.filename = filename;
 		this.node = node;
 		this.line = (int)node.getProperty(MyVisitor.DECLARED_LINE);
+		this.unit = unit;
 	}
 
 	public ASTNode getNode() {
@@ -38,4 +40,8 @@ public abstract class Warning {
 	}
 	
 	public abstract String getMessage();
+	
+	public CompilationUnit getCompilationUnit() {
+		return unit;
+	}
 }

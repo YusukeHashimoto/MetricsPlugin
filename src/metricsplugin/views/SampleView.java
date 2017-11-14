@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
@@ -17,8 +20,11 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.MarkerUtilities;
+import org.jetbrains.kotlin.core.Activator;
 
 import codeanalyzer.CodeAnalyzer;
+import kotlin.reflect.jvm.internal.impl.load.java.structure.JavaElement;
 import util.ProjectUtil;
 import warning.Warning;
 
@@ -191,16 +197,26 @@ public class SampleView extends ViewPart {
 				IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
 				IResource resource = (IResource)editorInput.getAdapter(IResource.class);
 
-				Map<String, Integer> attributes = new HashMap<>();
+				Map<String, Object> attributes = new HashMap<>();
 				attributes.put(IMarker.LINE_NUMBER, new Integer(line));
-
+				
+				attributes.put(IMarker.TRANSIENT, true);    // マーカーの永続化:true
+		        attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_NORMAL));      // マーカーの優先度:中
+		        attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));    // マーカーの重要度:警告
+		        attributes.put(IMarker.LINE_NUMBER, line);  // マーカーを表示させる行番号
+		        attributes.put(IMarker.MESSAGE, "hogehoge"); // マーカーに表示するメッセージ
+		        
+		        final String ID = "metricsplugin.views" + ".mymarker";
+		        
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
 					IDE.gotoMarker(ProjectUtil.activeEditor(), marker);
-					marker.delete();
-				} catch (CoreException e) {
-					//e.printStackTrace();
+					
+					MarkerUtilities.createMarker(resource, attributes, ID);  // マーカーを作成
+					//marker.delete();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		};
@@ -228,14 +244,29 @@ public class SampleView extends ViewPart {
 
 	private List<String> calc() {
 		CodeAnalyzer ca = new CodeAnalyzer();
-		//try {
-		ca.run(ProjectUtil.pathToPackage());
-		//} catch(Exception e) {
-		//ca.run(ProjectUtil.pathToPackage().substring(1));
-		//}
+		//ca.run(ProjectUtil.pathToPackage());
+		ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
+		
 		//analyze();
-
+/*
+		IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
+		IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+		IMarker marker;
+		try {
+			marker = resource.createMarker(IMarker.TASK);
+			Map<String, Object> attributeMap = new HashMap<>();
+			attributeMap.put(IMarker.MESSAGE, "あとで削除すべし。");
+			attributeMap.put(IMarker.LINE_NUMBER, new Integer(3));
+			marker.setAttributes(attributeMap);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	*/	
 		warnings = ca.getWarnings();
+		for(Warning warning : warnings) {
+			//markLine(warning);
+		}
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 	}
 
@@ -256,5 +287,39 @@ public class SampleView extends ViewPart {
 	public Object getAdapter(Class arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private void markLine(Warning warning) {
+		String message = warning.getMessage();
+		int line = warning.getLine();
+		//IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
+		//IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+		IResource resource;
+		try {
+			//resource = warning.getCompilationUnit().getJavaElement().getCorrespondingResource();
+			CompilationUnit unit = warning.getCompilationUnit();
+			IJavaElement je = unit.getJavaElement();
+			if(je == null) return;
+			resource = je.getCorrespondingResource();
+			IMarker marker = resource.createMarker(IMarker.TASK);
+			Map<String, Object> attributeMap = new HashMap<>();
+			attributeMap.put(IMarker.MESSAGE, message);
+			attributeMap.put(IMarker.LINE_NUMBER, line);
+			marker.setAttributes(attributeMap);
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}/*
+		IMarker marker;
+		try {
+			marker = resource.createMarker(IMarker.TASK);
+			Map<String, Object> attributeMap = new HashMap<>();
+			attributeMap.put(IMarker.MESSAGE, message);
+			attributeMap.put(IMarker.LINE_NUMBER, line);
+			marker.setAttributes(attributeMap);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 }

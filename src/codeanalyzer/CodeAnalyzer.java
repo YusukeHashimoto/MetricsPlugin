@@ -139,15 +139,19 @@ public class CodeAnalyzer {
 		MyVisitor visitor = new MyVisitor(rawCode);
 		node.accept(visitor);
 		
+		setLineNum(visitor, rawCode);
+		setLineNum2(visitor, rawCode);
 		visitor.getMethodInvocations().stream().forEach(m -> Log.verbose("MethodInvocation: " + m.toString()));
 		
 		for(ClassInfo c : visitor.classInfoSet()) {
-		//ClassInfo c = visitor.newClassInfo();
-		ci.put(c.getClassName(), c);
-		Log.info("packages used from " + pathToPackage + filename + " {");
-		c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
+			//ClassInfo c = visitor.newClassInfo();
+			ci.put(c.getClassName(), c);
+			Log.info("packages used from " + pathToPackage + filename + " {");
+			c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
+			warnings.addAll(warnings(c, pathToPackage + filename));
 		Log.info("}");
 		}
+	
 		
 		Log.print(Log.INFO);
 		//Log.print();
@@ -235,6 +239,13 @@ public class CodeAnalyzer {
 				.sorted(comparing(CodeAnalyzer::cyclomaticComplexityOf).reversed())
 				.forEach(node -> warnings.add(new ComplexMethodWarning(unit, node, filename, cyclomaticComplexityOf(node))));
 
+		return warnings;
+	}
+	
+	private List<Warning> warnings(ClassInfo ci, String filename) {
+		ci.getMethodDeclarations().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
+		.sorted(comparing(CodeAnalyzer::lineCountOf).reversed())
+		.forEach(node -> warnings.add(new LargeMethodWarning(null, node, filename, lineCountOf(node))));
 		return warnings;
 	}
 
