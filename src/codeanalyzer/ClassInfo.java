@@ -76,6 +76,10 @@ public class ClassInfo {
 		recievers.stream().forEach(r -> Log.info("Reciever :" + r));
 	}
 	
+	public List<VariableDeclarationFragment> getVarDecls() {
+		return varDecls;
+	}
+	
 	public String getFileName() {
 		return fileName;
 	}

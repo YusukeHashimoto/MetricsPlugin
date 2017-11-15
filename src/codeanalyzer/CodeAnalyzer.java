@@ -243,9 +243,20 @@ public class CodeAnalyzer {
 	}
 	
 	private List<Warning> warnings(ClassInfo ci, String filename) {
+		List<Warning> warnings = new ArrayList<Warning>();
+		
 		ci.getMethodDeclarations().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
 		.sorted(comparing(CodeAnalyzer::lineCountOf).reversed())
 		.forEach(node -> warnings.add(new LargeMethodWarning(null, node, filename, lineCountOf(node))));
+		
+		ci.getMethodDeclarations().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
+		.sorted(comparing(CodeAnalyzer::cyclomaticComplexityOf).reversed())
+		.forEach(node -> warnings.add(new ComplexMethodWarning(null, node, filename, cyclomaticComplexityOf(node))));
+		
+		ci.getVarDecls().stream().filter(v -> (v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)
+				&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
+		.sorted(comparing(CodeAnalyzer::lifeSpanOf).reversed())
+		.forEach(node -> warnings.add(new LargeScopeWarning(null, node, filename, lifeSpanOf(node))));
 		return warnings;
 	}
 

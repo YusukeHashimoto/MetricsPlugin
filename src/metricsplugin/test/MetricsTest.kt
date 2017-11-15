@@ -60,7 +60,7 @@ class MetricsTest {
 			val workspace = ResourcesPlugin.getWorkspace();
 			val root = workspace.root;
 			val projects = root.projects;
-			analyzer.analyzeCodes(null, "/Users/yusuke/Downloads/sep3asm/src/lang/sep3asm/parse/", projects[1])
+			analyzer.analyzeCodes(null, "C:/Users/Hashimoto/runtime-EclipseApplication/sep3asm/src/lang/sep3asm/parse/", projects[1]);
 			infoMap = analyzer.getClassInfo()
 		}
 	}

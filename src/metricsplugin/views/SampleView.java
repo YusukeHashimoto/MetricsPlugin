@@ -8,7 +8,6 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,10 +20,8 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.MarkerUtilities;
-import org.jetbrains.kotlin.core.Activator;
 
 import codeanalyzer.CodeAnalyzer;
-import kotlin.reflect.jvm.internal.impl.load.java.structure.JavaElement;
 import util.ProjectUtil;
 import warning.Warning;
 
@@ -97,7 +94,8 @@ public class SampleView extends ViewPart {
 		contributeToActionBars();
 
 		//refresh warnings when code has changed
-		ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
+		if(ProjectUtil.activeEditor() != null) 
+			ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
 
 		//WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?Animal=Object");
 	}
@@ -142,13 +140,16 @@ public class SampleView extends ViewPart {
 	private void makeActions() {
 		action1 = new Action() {
 			public void run() {
-				showMessage("Action 1 executed");
+				showMessage("Refresh!");
+				refresh();
 			}
 		};
-		action1.setText("Action 1");
+		action1.setText("Refresh");
 		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		//action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+				//getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		//action1.setImageDescriptor(MyActivator.getImageDescriptor("icons/refresh.gif"));
+		//action1.setImageDescriptor(MyActivator.getImageRegistry());
 
 		action2 = new Action() {
 			public void run() {
@@ -243,31 +244,20 @@ public class SampleView extends ViewPart {
 	private List<Warning> warnings;
 
 	private List<String> calc() {
+		try {
 		CodeAnalyzer ca = new CodeAnalyzer();
 		//ca.run(ProjectUtil.pathToPackage());
 		ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
-		
-		//analyze();
-/*
-		IEditorInput editorInput = ProjectUtil.activeEditor().getEditorInput();
-		IResource resource = (IResource)editorInput.getAdapter(IResource.class);
-		IMarker marker;
-		try {
-			marker = resource.createMarker(IMarker.TASK);
-			Map<String, Object> attributeMap = new HashMap<>();
-			attributeMap.put(IMarker.MESSAGE, "あとで削除すべし。");
-			attributeMap.put(IMarker.LINE_NUMBER, new Integer(3));
-			marker.setAttributes(attributeMap);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	*/	
 		warnings = ca.getWarnings();
 		for(Warning warning : warnings) {
 			//markLine(warning);
 		}
 		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
+		} catch(Exception e) {
+			List<String> list = new ArrayList<>();
+			list.add("メトリクスを計算できませんでした");
+			return list;
+		}
 	}
 
 	private void refresh() {
