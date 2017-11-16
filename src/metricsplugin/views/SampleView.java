@@ -140,14 +140,14 @@ public class SampleView extends ViewPart {
 	private void makeActions() {
 		action1 = new Action() {
 			public void run() {
-				showMessage("Refresh!");
+				//showMessage("Refresh!");
 				refresh();
 			}
 		};
 		action1.setText("Refresh");
 		action1.setToolTipText("Action 1 tooltip");
 		//action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				//getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		//getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		//action1.setImageDescriptor(MyActivator.getImageDescriptor("icons/refresh.gif"));
 		//action1.setImageDescriptor(MyActivator.getImageRegistry());
 
@@ -200,20 +200,20 @@ public class SampleView extends ViewPart {
 
 				Map<String, Object> attributes = new HashMap<>();
 				attributes.put(IMarker.LINE_NUMBER, new Integer(line));
-				
+
 				attributes.put(IMarker.TRANSIENT, true);    // マーカーの永続化:true
-		        attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_NORMAL));      // マーカーの優先度:中
-		        attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));    // マーカーの重要度:警告
-		        attributes.put(IMarker.LINE_NUMBER, line);  // マーカーを表示させる行番号
-		        attributes.put(IMarker.MESSAGE, "hogehoge"); // マーカーに表示するメッセージ
-		        
-		        final String ID = "metricsplugin.views" + ".mymarker";
-		        
+				attributes.put(IMarker.PRIORITY, Integer.valueOf(IMarker.PRIORITY_NORMAL));      // マーカーの優先度:中
+				attributes.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_WARNING));    // マーカーの重要度:警告
+				attributes.put(IMarker.LINE_NUMBER, line);  // マーカーを表示させる行番号
+				attributes.put(IMarker.MESSAGE, "hogehoge"); // マーカーに表示するメッセージ
+
+				final String ID = "metricsplugin.views" + ".mymarker";
+
 				try {
 					IMarker marker = resource.createMarker(IMarker.TEXT);
 					marker.setAttributes(attributes);
 					IDE.gotoMarker(ProjectUtil.activeEditor(), marker);
-					
+
 					MarkerUtilities.createMarker(resource, attributes, ID);  // マーカーを作成
 					//marker.delete();
 				} catch (Exception e) {
@@ -245,14 +245,14 @@ public class SampleView extends ViewPart {
 
 	private List<String> calc() {
 		try {
-		CodeAnalyzer ca = new CodeAnalyzer();
-		//ca.run(ProjectUtil.pathToPackage());
-		ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
-		warnings = ca.getWarnings();
-		for(Warning warning : warnings) {
-			//markLine(warning);
-		}
-		return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
+			CodeAnalyzer ca = new CodeAnalyzer();
+			//ca.run(ProjectUtil.pathToPackage());
+			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
+			warnings = ca.getWarnings();
+			for(Warning warning : warnings) {
+				//markLine(warning);
+			}
+			return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 		} catch(Exception e) {
 			List<String> list = new ArrayList<>();
 			list.add("メトリクスを計算できませんでした");
@@ -262,7 +262,9 @@ public class SampleView extends ViewPart {
 
 	private void refresh() {
 		viewer.setInput(calc());
-		//viewer.setInput(analyze());
+
+		if(ProjectUtil.activeEditor() != null) 
+			ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
 	}
 
 	private List<String> analyze() {
@@ -278,7 +280,7 @@ public class SampleView extends ViewPart {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	private void markLine(Warning warning) {
 		String message = warning.getMessage();
 		int line = warning.getLine();

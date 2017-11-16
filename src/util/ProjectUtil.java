@@ -2,8 +2,7 @@ package util;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 public class ProjectUtil {
@@ -17,7 +16,13 @@ public class ProjectUtil {
 	}
 	
 	public static AbstractTextEditor activeEditor() {
-		return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		IEditorPart e = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		if(e instanceof AbstractTextEditor) {
+			return (AbstractTextEditor)e;
+		} else {
+			return null;
+		}
+		//return (AbstractTextEditor)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 	}
 	
 	public static IFile editingFile() {
