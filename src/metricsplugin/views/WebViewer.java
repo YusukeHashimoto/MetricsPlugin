@@ -28,7 +28,7 @@ public class WebViewer {
 		}
 	}
 
-	public static void showInternalBrowser(String url) {
+	public static void showInternalBrowser(String url, String title) {
 		//String url = "http://www.eisbahn.jp/";
 		IWorkbenchBrowserSupport browserSupport = PlatformUI.getWorkbench().getBrowserSupport();
 		if (browserSupport.isInternalWebBrowserAvailable()) {

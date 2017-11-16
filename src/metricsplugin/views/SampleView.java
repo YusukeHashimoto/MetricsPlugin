@@ -94,9 +94,10 @@ public class SampleView extends ViewPart {
 		contributeToActionBars();
 
 		//refresh warnings when code has changed
+		/*
 		if(ProjectUtil.activeEditor() != null) 
 			ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
-
+		 */
 		//WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?Animal=Object");
 	}
 
@@ -246,25 +247,25 @@ public class SampleView extends ViewPart {
 	private List<String> calc() {
 		try {
 			CodeAnalyzer ca = new CodeAnalyzer();
-			//ca.run(ProjectUtil.pathToPackage());
 			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
 			warnings = ca.getWarnings();
-			for(Warning warning : warnings) {
-				//markLine(warning);
-			}
-			return ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
+			
+			List<String> warnings = ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
+			if(warnings.isEmpty()) warnings.add("問題のあるメトリクスは見つかりませんでした");
+			return warnings;
 		} catch(Exception e) {
 			List<String> list = new ArrayList<>();
-			list.add("メトリクスを計算できませんでした");
+			list.add("メトリクスを計算できませんでした" + e.toString());
 			return list;
 		}
 	}
 
 	private void refresh() {
 		viewer.setInput(calc());
-
+/*
 		if(ProjectUtil.activeEditor() != null) 
 			ProjectUtil.activeEditor().addPropertyListener((source, propId) -> refresh());
+			*/
 	}
 
 	private List<String> analyze() {

@@ -149,7 +149,7 @@ public class CodeAnalyzer {
 			Log.info("packages used from " + pathToPackage + filename + " {");
 			c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
 			warnings.addAll(warnings(c, pathToPackage + filename));
-		Log.info("}");
+			Log.info("}");
 		}
 	
 		

@@ -15,7 +15,7 @@ abstract class URLHandler extends AbstractHandler {
 		CodeAnalyzer ca = new CodeAnalyzer();
 		try {
 			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), null);
-			WebViewer.showInternalBrowser(generateURL(ca.getClassInfo()));
+			WebViewer.showInternalBrowser(generateURL(ca.getClassInfo()), title);
 		} catch(ClassCastException e) {
 			
 		}
@@ -23,4 +23,6 @@ abstract class URLHandler extends AbstractHandler {
 	}
 	
 	abstract String generateURL(Map<String, ClassInfo> classMap);
+	
+	protected String title = "No title";
 }

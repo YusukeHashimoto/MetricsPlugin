@@ -20,4 +20,7 @@ public class InheritanceTreeHandler extends URLHandler {
 		return url.toString();
 	}
 	
+	{
+		this.title = "Inheritance Tree";
+	}
 }

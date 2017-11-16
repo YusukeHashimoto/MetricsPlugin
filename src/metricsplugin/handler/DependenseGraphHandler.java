@@ -6,7 +6,10 @@ import java.util.Map.Entry;
 import codeanalyzer.ClassInfo;
 
 public class DependenseGraphHandler extends URLHandler{
-
+	{
+		this.title = "Dependense Graph";
+	}
+	
 	@Override
 	String generateURL(Map<String, ClassInfo> classMap) {
 		StringBuilder url = new StringBuilder("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?");

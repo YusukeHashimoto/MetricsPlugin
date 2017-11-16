@@ -15,6 +15,11 @@ public class ProjectUtil {
 		return file.getProject();
 	}
 	
+	/**
+	 * Return AbstractTextEditor currently opened.<br>
+	 * Return null if no editor has opened or editor is not text editor.
+	 * @return
+	 */
 	public static AbstractTextEditor activeEditor() {
 		IEditorPart e = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if(e instanceof AbstractTextEditor) {
@@ -29,6 +34,10 @@ public class ProjectUtil {
 		return ((IFileEditorInput)activeEditor().getEditorInput()).getFile();
 	}
 	
+	/**
+	 * Return path to package of file currently editor shows.<br>
+	 * @return
+	 */
 	public static String pathToPackage() {
 		String pathToFile =  editingFile().getLocationURI().getPath();
 		if(pathToFile.charAt(0) == '/' && pathToFile.charAt(1) != 'U') pathToFile = pathToFile.substring(1);

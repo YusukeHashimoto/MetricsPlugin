@@ -9,7 +9,28 @@ abstract class Animal {
 	}
 	
 	public void sleep() {
+		System.out.println();
+		System.out.println();
+		System.out.println();
 		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
 	}
 	
 	public void walk() {
