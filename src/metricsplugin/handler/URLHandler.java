@@ -13,8 +13,12 @@ abstract class URLHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		CodeAnalyzer ca = new CodeAnalyzer();
-		ca.analyzeCodes(null, ProjectUtil.pathToPackage(), null);
-		WebViewer.showInternalBrowser(generateURL(ca.getClassInfo()));
+		try {
+			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), null);
+			WebViewer.showInternalBrowser(generateURL(ca.getClassInfo()));
+		} catch(ClassCastException e) {
+			
+		}
 		return null;
 	}
 	
