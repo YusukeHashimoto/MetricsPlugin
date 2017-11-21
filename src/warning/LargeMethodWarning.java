@@ -1,8 +1,10 @@
 package warning;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-
-import warning.Warning;
 
 public class LargeMethodWarning extends Warning {
 	private int line;
@@ -11,9 +13,16 @@ public class LargeMethodWarning extends Warning {
 		super(unit, node, filename);
 		this.line = line;
 	}
-	
+
 	@Override
 	public String getMessage() {
 		return "メソッドの行数が長い(" + line + ") " + node.toString();
+	}
+
+	@Override
+	public List<Suggestion> suggestions() {
+		List<Suggestion> suggestions = new ArrayList<>();
+		suggestions.add(new Suggestion(Suggestion.SPLIT_METHOD));
+		return suggestions;
 	}
 }

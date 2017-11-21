@@ -52,6 +52,7 @@ public class SampleView extends ViewPart {
 	public static final String ID = "sample03.views.SampleView";
 
 	private TableViewer viewer;
+	//private TreeViewer viewer;
 	private Action action1;
 	private Action action2;
 	private Action doubleClickAction;
@@ -80,6 +81,7 @@ public class SampleView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		//viewer = new TreeViewer(parent);
 
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setInput(calc().toArray());

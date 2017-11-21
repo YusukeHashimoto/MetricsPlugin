@@ -10,4 +10,8 @@ public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename:
 	override fun getMessage(): String {
 		return "変数の寿命が長い(" + lifeSpan + ")" + node.toString()
 	}
+	
+	override fun suggestions(): List<Suggestion> {
+		return arrayListOf(Suggestion(Suggestion.INLINING_VARIABLE))
+	}
 }

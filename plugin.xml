@@ -15,6 +15,13 @@
             class="metricsplugin.views.SampleView"
             id="sample03.views.SampleView">
       </view>
+      <view
+            category="Sample03"
+            class="sample03.MetricsTreeView"
+            id="Sample03.view1"
+            name="MetricsTreeView"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

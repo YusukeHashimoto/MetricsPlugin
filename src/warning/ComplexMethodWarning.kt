@@ -10,4 +10,8 @@ class ComplexMethodWarning(unit: CompilationUnit?, node: ASTNode?, filename: Str
 	override fun getMessage(): String {
 		return "サイクロマチック数が大きい" + cyclomaticComplexity + node.toString()
 	}
+	
+	override fun suggestions(): List<Suggestion> {
+		return arrayListOf(Suggestion(Suggestion.EXTRACT_CONDITIONS_AS_METHOD), Suggestion(Suggestion.SPLIT_METHOD))
+	}
 }
