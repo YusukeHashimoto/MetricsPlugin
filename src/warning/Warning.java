@@ -22,7 +22,9 @@ public abstract class Warning {
 	public Warning(CompilationUnit unit, ASTNode node, String filename) {
 		this.filename = filename;
 		this.node = node;
-		this.line = (int) node.getProperty(MyVisitor.DECLARED_LINE);
+		if (node != null) {
+			this.line = (int) node.getProperty(MyVisitor.DECLARED_LINE);
+		}
 		this.unit = unit;
 	}
 

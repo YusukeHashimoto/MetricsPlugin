@@ -11,11 +11,12 @@ import org.eclipse.ui.part.ViewPart;
 
 import codeanalyzer.CodeAnalyzer;
 import util.ProjectUtil;
+import warning.Suggestion;
 import warning.Warning;
 
 public class MetricsTreeView extends ViewPart {
 	private TreeViewer viewer;
-	private List<Warning> warnings;
+	private List<Warning> warnings = new ArrayList<>();
 
 	public MetricsTreeView() {
 		// TODO Auto-generated constructor stub
@@ -30,18 +31,21 @@ public class MetricsTreeView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent);
-		viewer.setContentProvider(new ExplororContentProvider());
+		// viewer.setContentProvider(new ExplororContentProvider());
+		viewer.setContentProvider(new WarningContentProvider());
 		viewer.setLabelProvider(new ExplororLabelProvider());
-		viewer.setInput(File.listRoots());
-		viewer.setSorter(new ViewerSorter() {
-			@Override
-			public int category(Object element) {
-				if (((File) element).isDirectory()) {
-					return 0;
-				}
-				return 1;
-			}
-		});
+		warnings.add(new DummyWarning());
+		warnings.add(new DummyWarning());
+		warnings.add(new DummyWarning());
+
+		// viewer.setInput(File.listRoots());
+		viewer.setInput(warnings.toArray());
+		/*
+		 * viewer.setSorter(new ViewerSorter() {
+		 * 
+		 * @Override public int category(Object element) { if (((File)
+		 * element).isDirectory()) { return 0; } return 1; } });
+		 */
 		getSite().setSelectionProvider(viewer);
 	}
 
@@ -67,6 +71,37 @@ public class MetricsTreeView extends ViewPart {
 			return list;
 		}
 	}
+}
+
+class WarningContentProvider implements ITreeContentProvider {
+
+	@Override
+	public Object[] getElements(Object inputElement) {
+		return (Object[]) inputElement;
+	}
+
+	@Override
+	public Object[] getChildren(Object parentElement) {
+		if (parentElement instanceof DummyWarning) {
+			return ((DummyWarning) parentElement).suggestions().toArray();
+		}
+		return null;
+	}
+
+	@Override
+	public Object getParent(Object element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasChildren(Object element) {
+		if (element instanceof DummyWarning) {
+			return true;
+		}
+		return false;
+	}
+
 }
 
 class ExplororContentProvider implements ITreeContentProvider {
@@ -110,11 +145,33 @@ class ExplororLabelProvider extends LabelProvider {
 	 */
 	@Override
 	public String getText(Object element) {
-		File file = (File) element;
-		String name = file.getName();
-		if (name.equals("")) {
-			name = file.getPath();
+		/*
+		 * File file = (File) element; String name = file.getName(); if
+		 * (name.equals("")) { name = file.getPath(); } return name;
+		 */
+		if (element instanceof Suggestion) {
+			return ((Suggestion) element).message();
 		}
-		return name;
+		return element.toString();
 	}
+}
+
+class DummyWarning extends Warning {
+	private List<Suggestion> suggestions = new ArrayList<>();
+
+	public DummyWarning() {
+		super(null, null, null);
+		suggestions.add(new Suggestion(Suggestion.SPLIT_METHOD));
+	}
+
+	@Override
+	public String getMessage() {
+		return "test";
+	}
+
+	@Override
+	public List<Suggestion> suggestions() {
+		return suggestions;
+	}
+
 }

@@ -7,7 +7,11 @@ public class Suggestion {
 
 	private int type = 0;
 
-	Suggestion(int type) {
+	public Suggestion(int type) {
 		this.type = type;
+	}
+
+	public String message() {
+		return "message";
 	}
 }
