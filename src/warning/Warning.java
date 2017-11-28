@@ -31,6 +31,16 @@ public abstract class Warning implements Node<MetricsCategory, Suggestion> {
 		this.unit = unit;
 	}
 
+	@Override
+	public List<Suggestion> getChildren() {
+		return suggestions();
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return !suggestions().isEmpty();
+	}
+
 	public ASTNode getNode() {
 		return node;
 	}

@@ -31,17 +31,7 @@ public class LargeMethodWarning extends Warning {
 	}
 
 	@Override
-	public List<Suggestion> getChildren() {
-		return suggestions();
-	}
-
-	@Override
 	public MetricsCategory getParent() {
 		return MetricsCategory.SIMPLE_METRICS;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return !suggestions().isEmpty();
 	}
 }

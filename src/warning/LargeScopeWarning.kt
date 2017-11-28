@@ -20,12 +20,4 @@ public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename:
 	override fun getParent(): MetricsCategory {
 		return MetricsCategory.SIMPLE_METRICS;
 	}
-	
-	override fun hasChildren(): Boolean {
-		return !suggestions().isEmpty();
-	}
-	
-	override fun getChildren(): List<Suggestion> {
-		return suggestions();
-	}
 }
