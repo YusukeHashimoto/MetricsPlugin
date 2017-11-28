@@ -3,6 +3,8 @@ package warning
 import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.CompilationUnit
 import warning.*
+import warning.suggestion.*
+import sample03.MetricsCategory;
 
 public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename: String?, lifeSpan: Int?) : Warning(unit, node, filename) {
 	val lifeSpan = lifeSpan
@@ -12,6 +14,18 @@ public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename:
 	}
 	
 	override fun suggestions(): List<Suggestion> {
-		return arrayListOf(Suggestion(Suggestion.INLINING_VARIABLE))
+		return arrayListOf(InliningVariableSuggestion(this))
+	}
+	
+	override fun getParent(): MetricsCategory {
+		return MetricsCategory.SIMPLE_METRICS;
+	}
+	
+	override fun hasChildren(): Boolean {
+		return !suggestions().isEmpty();
+	}
+	
+	override fun getChildren(): List<Suggestion> {
+		return suggestions();
 	}
 }

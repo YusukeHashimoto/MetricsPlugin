@@ -7,8 +7,11 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import codeanalyzer.MyVisitor;
+import sample03.MetricsCategory;
+import sample03.Node;
+import warning.suggestion.Suggestion;
 
-public abstract class Warning {
+public abstract class Warning implements Node<MetricsCategory, Suggestion> {
 	private String filename;
 	protected ASTNode node;
 	// protected String message;
@@ -52,5 +55,10 @@ public abstract class Warning {
 
 	public List<Suggestion> suggestions() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public String getLabel() {
+		return getMessage();
 	}
 }

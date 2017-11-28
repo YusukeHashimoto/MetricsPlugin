@@ -6,6 +6,10 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
+import sample03.MetricsCategory;
+import warning.suggestion.SplitMethodSuggestion;
+import warning.suggestion.Suggestion;
+
 public class LargeMethodWarning extends Warning {
 	private int line;
 
@@ -22,7 +26,22 @@ public class LargeMethodWarning extends Warning {
 	@Override
 	public List<Suggestion> suggestions() {
 		List<Suggestion> suggestions = new ArrayList<>();
-		suggestions.add(new Suggestion(Suggestion.SPLIT_METHOD));
+		suggestions.add(new SplitMethodSuggestion(this));
 		return suggestions;
+	}
+
+	@Override
+	public List<Suggestion> getChildren() {
+		return suggestions();
+	}
+
+	@Override
+	public MetricsCategory getParent() {
+		return MetricsCategory.SIMPLE_METRICS;
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return !suggestions().isEmpty();
 	}
 }
