@@ -3,7 +3,7 @@ package warning.ckmetrics;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import sample03.MetricsCategory;
+import metricsplugin.views.metricstreeview.MetricsCategory;
 import warning.Warning;
 
 abstract class CKMetricsWarning extends Warning {

@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.dom.ASTNode
 import org.eclipse.jdt.core.dom.CompilationUnit
 import warning.*
 import warning.suggestion.*
-import sample03.MetricsCategory;
+import metricsplugin.views.metricstreeview.MetricsCategory;
 
 public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename: String?, lifeSpan: Int?) : Warning(unit, node, filename) {
 	val lifeSpan = lifeSpan

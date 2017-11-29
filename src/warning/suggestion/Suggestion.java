@@ -2,7 +2,7 @@ package warning.suggestion;
 
 import java.util.List;
 
-import sample03.Node;
+import metricsplugin.views.metricstreeview.Node;
 import warning.Warning;
 
 public abstract class Suggestion implements Node<Warning, Object> {

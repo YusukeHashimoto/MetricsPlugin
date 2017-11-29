@@ -1,4 +1,4 @@
-package sample03;
+package metricsplugin.views.metricstreeview;
 
 import java.util.ArrayList;
 import java.util.List;

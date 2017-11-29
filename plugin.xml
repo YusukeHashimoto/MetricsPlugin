@@ -17,7 +17,7 @@
       </view>
       <view
             category="Sample03"
-            class="sample03.MetricsTreeView"
+            class="metricsplugin.views.metricstreeview.MetricsTreeView"
             id="Sample03.view1"
             name="MetricsTreeView"
             restorable="true">

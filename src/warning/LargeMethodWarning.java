@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import sample03.MetricsCategory;
+import metricsplugin.views.metricstreeview.MetricsCategory;
 import warning.suggestion.SplitMethodSuggestion;
 import warning.suggestion.Suggestion;
 

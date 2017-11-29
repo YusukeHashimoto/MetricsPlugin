@@ -7,8 +7,8 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import codeanalyzer.MyVisitor;
-import sample03.MetricsCategory;
-import sample03.Node;
+import metricsplugin.views.metricstreeview.MetricsCategory;
+import metricsplugin.views.metricstreeview.Node;
 import warning.suggestion.Suggestion;
 
 public abstract class Warning implements Node<MetricsCategory, Suggestion> {
