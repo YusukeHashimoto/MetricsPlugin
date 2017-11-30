@@ -43,7 +43,8 @@ public class MetricsTreeView extends ViewPart {
 			Object obj = ((IStructuredSelection)selection).getFirstElement();
 			if(obj instanceof Warning) {
 				ProjectUtil.openInEditor(((Warning)obj).getFilename());
-				ProjectUtil.markLine(((Warning)obj).getLine());
+				//ProjectUtil.markLine(((Warning)obj).getLine());
+				ProjectUtil.markPosition(((Warning)obj).getNode().getStartPosition());
 			}
 		});
 

@@ -89,6 +89,26 @@ public class ProjectUtil {
 
 		Map<String, Integer> attributes = new HashMap<>();
 		attributes.put(IMarker.LINE_NUMBER, new Integer(line));
+		//attributes.put(IMarker.CHAR_START, line);
+		//attributes.put(IMarker.CHAR_END, line);
+
+		try {
+			IMarker marker = resource.createMarker(IMarker.TEXT);
+			marker.setAttributes(attributes);
+			IDE.gotoMarker(activeEditor(), marker);
+			marker.delete();
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void markPosition(int position) {
+		IEditorInput editorInput = activeEditor().getEditorInput();
+		IResource resource = (IResource)editorInput.getAdapter(IResource.class);
+
+		Map<String, Integer> attributes = new HashMap<>();
+		attributes.put(IMarker.CHAR_START, position);
+		attributes.put(IMarker.CHAR_END, position);
 
 		try {
 			IMarker marker = resource.createMarker(IMarker.TEXT);
