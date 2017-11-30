@@ -39,7 +39,12 @@ public class MetricsTreeView extends ViewPart {
 		// viewer.setInput(MetricsCategory.SIMPLE_METRICS.getWarnings().toArray());
 		viewer.setInput(MetricsCategory.values());
 		viewer.addDoubleClickListener(event -> {
-
+			ISelection selection = viewer.getSelection();
+			Object obj = ((IStructuredSelection)selection).getFirstElement();
+			if(obj instanceof Warning) {
+				ProjectUtil.openInEditor(((Warning)obj).getFilename());
+				ProjectUtil.markLine(((Warning)obj).getLine());
+			}
 		});
 
 		getSite().setSelectionProvider(viewer);
@@ -56,7 +61,7 @@ public class MetricsTreeView extends ViewPart {
 			CodeAnalyzer ca = new CodeAnalyzer();
 			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
 			warnings = ca.getWarnings();
-			MetricsCategory.SIMPLE_METRICS.setWarnings(warnings);
+			MetricsCategory.setAllWarnings(warnings);
 
 			List<String> warnings = ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
 			if (warnings.isEmpty())

@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.*;
 import util.Log;
 import util.ProjectUtil;
 import warning.*;
+import warning.ckmetrics.WMCWarning;
 
 public class CodeAnalyzer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
@@ -257,6 +258,11 @@ public class CodeAnalyzer {
 				&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
 		.sorted(comparing(CodeAnalyzer::lifeSpanOf).reversed())
 		.forEach(node -> warnings.add(new LargeScopeWarning(null, node, filename, lifeSpanOf(node))));
+		
+		if(ci.weightedMethodsPerClass() > Threshold.WEIGHTED_METHOD_PER_CLASS) {
+			warnings.add(new WMCWarning(null, null, filename, ci.weightedMethodsPerClass()));
+		}
+		
 		return warnings;
 	}
 
