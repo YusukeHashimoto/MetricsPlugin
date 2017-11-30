@@ -28,6 +28,7 @@ public abstract class Warning implements Node<MetricsCategory, Suggestion> {
 		if (node != null) {
 			this.line = (int) node.getProperty(MyVisitor.DECLARED_LINE);
 		}
+		this.line = (node == null) ? 0 : (int) node.getProperty(MyVisitor.DECLARED_LINE);
 		this.unit = unit;
 	}
 
