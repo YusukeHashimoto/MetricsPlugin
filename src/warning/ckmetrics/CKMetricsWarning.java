@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import metricsplugin.views.metricstreeview.MetricsCategory;
 import warning.Warning;
 
-abstract class CKMetricsWarning extends Warning {
+public abstract class CKMetricsWarning extends Warning {
 
 	public CKMetricsWarning(CompilationUnit unit, ASTNode node, String filename) {
 		super(unit, node, filename);

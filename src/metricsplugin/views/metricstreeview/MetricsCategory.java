@@ -2,8 +2,10 @@ package metricsplugin.views.metricstreeview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import warning.Warning;
+import warning.ckmetrics.CKMetricsWarning;
 
 public enum MetricsCategory implements Node<Object, Warning> {
 	SIMPLE_METRICS("Simple Metrics"), CK_METRICS("CK Metrics");
@@ -14,8 +16,13 @@ public enum MetricsCategory implements Node<Object, Warning> {
 		return warnings;
 	}
 
-	public void setWarnings(List<Warning> warnings) {
+	protected void setWarnings(List<Warning> warnings) {
 		this.warnings = warnings;
+	}
+	
+	public static void setAllWarnings(List<Warning> warnings) {
+		SIMPLE_METRICS.setWarnings(warnings.stream().filter(w -> !(w instanceof CKMetricsWarning)).collect(Collectors.toList()));
+		CK_METRICS.setWarnings(warnings.stream().filter(w -> w instanceof CKMetricsWarning).collect(Collectors.toList()));
 	}
 
 	@Override

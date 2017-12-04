@@ -2,7 +2,6 @@ package metricsplugin.views.metricstreeview;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.widgets.Composite;
@@ -29,7 +28,13 @@ public class MetricsTreeView extends ViewPart {
 		calc();
 		viewer.setInput(MetricsCategory.values());
 		viewer.addDoubleClickListener(event -> {
-
+			ISelection selection = viewer.getSelection();
+			Object obj = ((IStructuredSelection)selection).getFirstElement();
+			if(obj instanceof Warning) {
+				Warning warning = (Warning)obj;
+				ProjectUtil.openInEditor(warning.getFilename());
+				ProjectUtil.markPosition(warning.getNode() != null ? warning.getNode().getStartPosition() : 0);
+			}
 		});
 
 		getSite().setSelectionProvider(viewer);
@@ -40,21 +45,14 @@ public class MetricsTreeView extends ViewPart {
 		// TODO Auto-generated method stub
 	}
 
-	private List<String> calc() {
+	private void calc() {
 		try {
 			CodeAnalyzer ca = new CodeAnalyzer();
 			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
 			warnings = ca.getWarnings();
-			MetricsCategory.SIMPLE_METRICS.setWarnings(warnings);
-
-			List<String> warnings = ca.getWarnings().stream().map(Warning::getMessage).collect(Collectors.toList());
-			if (warnings.isEmpty())
-				warnings.add("問題のあるメトリクスは見つかりませんでした");
-			return warnings;
+			MetricsCategory.setAllWarnings(warnings);
 		} catch (Exception e) {
-			List<String> list = new ArrayList<>();
-			list.add("メトリクスを計算できませんでした" + e.toString());
-			return list;
+			System.err.println("Failed to calcurate metrics\n" + e);
 		}
 	}
 }
@@ -80,7 +78,6 @@ class WarningContentProvider implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		return ((Node<?, ?>) element).hasChildren();
 	}
-
 }
 
 class ExplororLabelProvider extends LabelProvider {
