@@ -20,7 +20,7 @@ public class LargeMethodWarning extends Warning {
 
 	@Override
 	public String getMessage() {
-		return "メソッドの行数が長い(" + line + ") " + node.toString();
+		return "メソッドの行数が大きい(" + line + ") " + node.toString();
 	}
 
 	@Override
