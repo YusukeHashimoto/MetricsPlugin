@@ -8,8 +8,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import codeanalyzer.CodeAnalyzer;
+import metricsplugin.views.WebViewer;
 import util.ProjectUtil;
 import warning.Warning;
+import warning.suggestion.Suggestion;
 
 public class MetricsTreeView extends ViewPart {
 	private TreeViewer viewer;
@@ -34,6 +36,8 @@ public class MetricsTreeView extends ViewPart {
 				Warning warning = (Warning)obj;
 				ProjectUtil.openInEditor(warning.getFilename());
 				ProjectUtil.markPosition(warning.getNode() != null ? warning.getNode().getStartPosition() : 0);
+			} else if(obj instanceof Suggestion) {
+				WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/sample.html", "Sample");
 			}
 		});
 

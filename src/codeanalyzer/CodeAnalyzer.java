@@ -158,7 +158,7 @@ public class CodeAnalyzer {
 			JSONLog.log(c);
 		}
 
-		Log.print(Log.INFO);
+		Log.print(Log.ERROR);
 		// Log.print();
 	}
 

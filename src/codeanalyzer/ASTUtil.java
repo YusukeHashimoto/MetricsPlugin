@@ -49,4 +49,21 @@ public class ASTUtil {
 	static String definedClassnameOf(ASTNode node) {
 		return definedClassOf(node).getName().toString();
 	}
+	
+	static String methodNameOf(MethodDeclaration md) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(md.getName().toString());
+		sb.append('(');
+		for(Object obj : md.parameters()) {
+			sb.append(((SingleVariableDeclaration)obj).getType().toString());
+			sb.append(',');
+		}
+		if(sb.charAt(sb.length()-1) != '(') {
+			sb.deleteCharAt(sb.length()-1);	
+		}
+		
+		sb.append(')');
+		
+		return sb.toString();
+	}
 }

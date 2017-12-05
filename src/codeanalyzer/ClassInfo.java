@@ -323,7 +323,8 @@ public class ClassInfo {
 
 		Map<String, Integer> ccMap = new HashMap<>();
 		for (MethodDeclaration method : methodDeclarations) {
-			ccMap.put(method.toString(), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
+			//ccMap.put(method.toString(), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
+			ccMap.put(ASTUtil.methodNameOf(method), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
 		}
 		metricsMap.put(Metrics.CYCLOMATIC_COMPLEXITY, ccMap);
 		return metricsMap;
