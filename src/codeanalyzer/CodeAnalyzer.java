@@ -267,7 +267,7 @@ public class CodeAnalyzer {
 				.forEach(node -> warnings.add(new LargeScopeWarning(null, node, filename, lifeSpanOf(node))));
 
 		if (ci.weightedMethodsPerClass() > Threshold.WEIGHTED_METHOD_PER_CLASS) {
-			warnings.add(new WMCWarning(null, null, filename, ci.weightedMethodsPerClass()));
+			warnings.add(new WMCWarning(null, ci.getMethodDeclarations(), filename, ci.weightedMethodsPerClass()));
 		}
 		return warnings;
 	}
