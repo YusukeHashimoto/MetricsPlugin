@@ -1,7 +1,6 @@
 package codeanalyzer;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.*;
@@ -149,6 +148,9 @@ public class ClassInfo {
 		final Set<Response> s = methodInvocations.stream().map(
 				mi -> new Response(mi.resolveMethodBinding().getDeclaringClass().getName(), mi.getName().toString()))
 				.filter(r -> !r.getClassname().equals(className)).collect(Collectors.toSet());
+
+		List<String> methodNames = methodDeclarations.stream().map(m -> ASTUtil.methodNameOf(m))
+				.collect(Collectors.toList());
 		methodNames.stream().forEach(m -> s.add(new Response(className, m)));
 		return s;
 	}
@@ -161,19 +163,19 @@ public class ClassInfo {
 		return wmc;
 	}
 
-	public int depthOfInheritanceTree(Map<String, ClassInfo> classList) {
+	// public int depthOfInheritanceTree(Map<String, ClassInfo> classList) {
+	public int depthOfInheritanceTree(Collection<ClassInfo> classList) {
 		if (superclassName == null || superclassName.equals("Object") || superclassName.equalsIgnoreCase(""))
 			return 2;
 
-		for (Entry<String, ClassInfo> e : classList.entrySet()) {
-			ClassInfo ci = e.getValue();
+		for (ClassInfo ci : classList) {
 			if (ci.getClassName().equals(superclassName))
 				return ci.depthOfInheritanceTree(classList) + 1;
 		}
 		return 3;
 	}
 
-	public int numberOfChildren(Map<String, ClassInfo> classList) {
+	public int numberOfChildren(Collection<ClassInfo> classList) {
 		int noc = subclasses.size();
 		for (ClassInfo subclass : subclasses) {
 			noc += subclass.numberOfChildren(classList);
@@ -320,13 +322,23 @@ public class ClassInfo {
 	public Map<String, Object> getMetricsMap() {
 		Map<String, Object> metricsMap = new HashMap<>();
 		metricsMap.put(Metrics.WMC, weightedMethodsPerClass());
+		// ClassMetrics met = new ClassMetrics();
+		// met.classname = this.className;
+		// met.wmc = weightedMethodsPerClass();
+		// System.err.println(new Gson().toJson(met));
 
 		Map<String, Integer> ccMap = new HashMap<>();
 		for (MethodDeclaration method : methodDeclarations) {
-			//ccMap.put(method.toString(), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
+			// ccMap.put(method.toString(), (Integer)
+			// method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
 			ccMap.put(ASTUtil.methodNameOf(method), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
 		}
 		metricsMap.put(Metrics.CYCLOMATIC_COMPLEXITY, ccMap);
+
+		// System.err.println(new Gson().toJson(this));
 		return metricsMap;
 	}
 }
+/*
+ * class ClassMetrics { String classname; int wmc; }
+ */

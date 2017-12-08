@@ -35,7 +35,7 @@ class SimpleTest {
 	@Test
 	fun testDIT() {
 		infoMap.forEach {
-			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap))
+			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap.values))
 		}
 	}
 	
@@ -43,7 +43,7 @@ class SimpleTest {
 	@Test
 	fun testNOC() {
 		infoMap.forEach {
-			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap))
+			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap.values))
 		}
 	}
 

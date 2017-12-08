@@ -27,14 +27,14 @@ class MetricsTest {
 	@Test
 	fun testDIT() {
 		infoMap.forEach {
-			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap))
+			assertEquals(DITMap[it.value.className], it.value.depthOfInheritanceTree(infoMap.values))
 		}
 	}
 	
 	@Test
 	fun testNOC() {
 		infoMap.forEach {
-			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap))
+			assertEquals(NOCMap[it.value.className], it.value.numberOfChildren(infoMap.values))
 		}
 	}
 	
@@ -61,7 +61,8 @@ class MetricsTest {
 			val root = workspace.root;
 			//val projects = root.projects;
 			val project = root.getProject("sep3asm")
-			analyzer.analyzeCodes(null, "C:/Users/Hashimoto/runtime-EclipseApplication/sep3asm/src/lang/sep3asm/parse/", project);
+			//analyzer.analyzeCodes(null, "C:/Users/Hashimoto/runtime-EclipseApplication/sep3asm/src/lang/sep3asm/parse/", project);
+			analyzer.analyzeCodes(null, "/Users/yusuke/Develop/runtime-EclipseApplication/sep3asm/src/lang/sep3asm/parse/", project);
 			infoMap = analyzer.getClassInfo()
 		}
 	}

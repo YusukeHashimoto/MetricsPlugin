@@ -27,6 +27,6 @@ public class JSONLog {
 	}
 
 	private static void print(String str) {
-		System.err.println(str);
+		// System.err.println(str);
 	}
 }

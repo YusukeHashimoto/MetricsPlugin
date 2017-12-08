@@ -157,7 +157,7 @@ public class CodeAnalyzer {
 
 			JSONLog.log(c);
 		}
-
+		genClassMetrics(visitor.classInfoSet());
 		Log.print(Log.ERROR);
 		// Log.print();
 	}
@@ -290,5 +290,13 @@ public class CodeAnalyzer {
 
 	public Map<String, ClassInfo> getClassInfo() {
 		return ci;
+	}
+
+	public ClassMetrics genClassMetrics(Collection<ClassInfo> classInfos) {
+		for (ClassInfo ci : classInfos) {
+			ClassMetrics cm = new ClassMetrics(ci, classInfos);
+			System.err.println(cm.toJson());
+		}
+		return null;
 	}
 }
