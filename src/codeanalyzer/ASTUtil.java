@@ -50,7 +50,11 @@ public class ASTUtil {
 		return definedClassOf(node).getName().toString();
 	}
 	
-	static String methodNameOf(MethodDeclaration md) {
+	public static String methodNameOf(ASTNode node) {
+		return methodNameOf((MethodDeclaration)node);
+	}
+	
+	public static String methodNameOf(MethodDeclaration md) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(md.getName().toString());
 		sb.append('(');

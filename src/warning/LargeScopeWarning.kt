@@ -5,12 +5,13 @@ import org.eclipse.jdt.core.dom.CompilationUnit
 import warning.*
 import warning.suggestion.*
 import metricsplugin.views.metricstreeview.MetricsCategory;
+import codeanalyzer.ASTUtil
 
 public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename: String?, lifeSpan: Int?) : Warning(unit, node, filename) {
 	val lifeSpan = lifeSpan
 
 	override fun getMessage(): String {
-		return "ローカル変数の寿命が長い(" + lifeSpan + ")" + node.toString()
+		return "ローカル変数の寿命が長い(" + lifeSpan + ") " + ASTUtil.methodNameOf(node);
 	}
 	
 	override fun suggestions(): List<Suggestion> {

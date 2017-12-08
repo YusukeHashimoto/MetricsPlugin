@@ -3,9 +3,9 @@ package warning;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.*;
 
+import codeanalyzer.ASTUtil;
 import metricsplugin.views.metricstreeview.MetricsCategory;
 import warning.suggestion.SplitMethodSuggestion;
 import warning.suggestion.Suggestion;
@@ -20,7 +20,7 @@ public class LargeMethodWarning extends Warning {
 
 	@Override
 	public String getMessage() {
-		return "メソッドの行数が大きい(" + line + ") " + node.toString();
+		return "メソッドの行数が大きい(" + line + ") " + ASTUtil.methodNameOf((MethodDeclaration)node);
 	}
 
 	@Override

@@ -3,8 +3,12 @@ package metricsplugin.views.metricstreeview;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
 import codeanalyzer.CodeAnalyzer;
@@ -16,6 +20,8 @@ import warning.suggestion.Suggestion;
 public class MetricsTreeView extends ViewPart {
 	private TreeViewer viewer;
 	private List<Warning> warnings = new ArrayList<>();
+	private Action action1;
+	private Action action2;
 
 	@Override
 	public Object getAdapter(Class arg0) {
@@ -42,6 +48,10 @@ public class MetricsTreeView extends ViewPart {
 		});
 
 		getSite().setSelectionProvider(viewer);
+		
+		makeActions();
+		hookContextMenu();
+		contributeToActionBars();
 	}
 
 	@Override
@@ -59,7 +69,64 @@ public class MetricsTreeView extends ViewPart {
 			System.err.println("Failed to calcurate metrics\n" + e);
 		}
 	}
+	
+	private void fillLocalPullDown(IMenuManager manager) {
+		manager.add(action1);
+		manager.add(new Separator());
+		manager.add(action2);
+	}
+
+	private void fillContextMenu(IMenuManager manager) {
+		manager.add(action1);
+		manager.add(action2);
+		// Other plug-ins can contribute there actions here
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
+
+	private void fillLocalToolBar(IToolBarManager manager) {
+		manager.add(action1);
+		manager.add(action2);
+	}
+	
+	private void hookContextMenu() {
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				MetricsTreeView.this.fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, viewer);
+	}
+
+	private void contributeToActionBars() {
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
+	private void makeActions() {
+		action1 = new Action() {
+			public void run() {
+				//showMessage("Refresh!");
+				refresh();
+			}
+		};
+		action1.setText("Refresh");
+		action1.setToolTipText("Action 1 tooltip");
+		
+		action2 = new Action() {
+		};
+		action2.setText("2");
+	}
+	
+	void refresh() {
+		System.err.println("hogehoge");
+	}
 }
+
 
 class WarningContentProvider implements ITreeContentProvider {
 
