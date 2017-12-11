@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
+import log.JSONLog;
 import util.*;
 import warning.*;
 import warning.ckmetrics.WMCWarning;

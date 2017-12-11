@@ -1,7 +1,7 @@
 package metricsplugin.views.metricstreeview;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
@@ -11,8 +11,11 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
+import codeanalyzer.ClassInfo;
 import codeanalyzer.CodeAnalyzer;
+import log.LogManager;
 import metricsplugin.views.WebViewer;
+import util.ClassMetrics;
 import util.ProjectUtil;
 import warning.Warning;
 import warning.suggestion.Suggestion;
@@ -22,6 +25,9 @@ public class MetricsTreeView extends ViewPart {
 	private List<Warning> warnings = new ArrayList<>();
 	private Action action1;
 	private Action action2;
+
+	private LogManager lm;
+	private Map<String, ClassInfo> ci;
 
 	@Override
 	public Object getAdapter(Class arg0) {
@@ -37,21 +43,24 @@ public class MetricsTreeView extends ViewPart {
 		viewer.setInput(MetricsCategory.values());
 		viewer.addDoubleClickListener(event -> {
 			ISelection selection = viewer.getSelection();
-			Object obj = ((IStructuredSelection)selection).getFirstElement();
-			if(obj instanceof Warning) {
-				Warning warning = (Warning)obj;
+			Object obj = ((IStructuredSelection) selection).getFirstElement();
+			if (obj instanceof Warning) {
+				Warning warning = (Warning) obj;
 				ProjectUtil.openInEditor(warning.getFilename());
 				ProjectUtil.markPosition(warning.getNode() != null ? warning.getNode().getStartPosition() : 0);
-			} else if(obj instanceof Suggestion) {
-				WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/sample.html", "Sample");
+			} else if (obj instanceof Suggestion) {
+				WebViewer.showInternalBrowser("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/sample.html",
+						"Sample");
 			}
 		});
 
 		getSite().setSelectionProvider(viewer);
-		
+
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
+
+		lm = new log.LogManager(ProjectUtil.currentProject());
 	}
 
 	@Override
@@ -65,11 +74,13 @@ public class MetricsTreeView extends ViewPart {
 			ca.analyzeCodes(null, ProjectUtil.pathToPackage(), ProjectUtil.currentProject());
 			warnings = ca.getWarnings();
 			MetricsCategory.setAllWarnings(warnings);
+			ci = ca.getClassInfo();
 		} catch (Exception e) {
 			System.err.println("Failed to calcurate metrics\n" + e);
+			e.printStackTrace();
 		}
 	}
-	
+
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(action1);
 		manager.add(new Separator());
@@ -87,11 +98,12 @@ public class MetricsTreeView extends ViewPart {
 		manager.add(action1);
 		manager.add(action2);
 	}
-	
+
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
+			@Override
 			public void menuAboutToShow(IMenuManager manager) {
 				MetricsTreeView.this.fillContextMenu(manager);
 			}
@@ -109,24 +121,33 @@ public class MetricsTreeView extends ViewPart {
 
 	private void makeActions() {
 		action1 = new Action() {
+			@Override
 			public void run() {
-				//showMessage("Refresh!");
+				// showMessage("Refresh!");
 				refresh();
 			}
 		};
 		action1.setText("Refresh");
 		action1.setToolTipText("Action 1 tooltip");
-		
+
 		action2 = new Action() {
 		};
 		action2.setText("2");
 	}
-	
+
 	void refresh() {
-		System.err.println("hogehoge");
+		calc();
+		viewer.setInput(MetricsCategory.values());
+		printLog();
+	}
+
+	void printLog() {
+		LogManager lm = new LogManager(ProjectUtil.currentProject());
+		List<ClassMetrics> cmList = ci.values().stream().map(c -> new ClassMetrics(c, ci.values()))
+				.collect(Collectors.toList());
+		lm.write(cmList);
 	}
 }
-
 
 class WarningContentProvider implements ITreeContentProvider {
 
