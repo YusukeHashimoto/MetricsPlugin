@@ -184,7 +184,7 @@ public class ClassInfo {
 	}
 
 	public double lackOfCohesionInMethods() {
-		System.out.println("\t class " + className);
+		// System.out.println("\t class " + className);
 		double x = 0;
 		for (VariableDeclarationFragment var : fieldVars) {
 			Set<MethodDeclaration> set = cohesionMap.get(var);

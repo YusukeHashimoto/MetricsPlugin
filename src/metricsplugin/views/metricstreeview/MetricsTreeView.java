@@ -60,7 +60,7 @@ public class MetricsTreeView extends ViewPart {
 		hookContextMenu();
 		contributeToActionBars();
 
-		lm = new log.LogManager(ProjectUtil.currentProject());
+		lm = new log.LogManager();
 	}
 
 	@Override
@@ -141,8 +141,8 @@ public class MetricsTreeView extends ViewPart {
 		printLog();
 	}
 
-	void printLog() {
-		LogManager lm = new LogManager(ProjectUtil.currentProject());
+	private void printLog() {
+		LogManager lm = new LogManager();
 		List<ClassMetrics> cmList = ci.values().stream().map(c -> new ClassMetrics(c, ci.values()))
 				.collect(Collectors.toList());
 		lm.write(cmList);

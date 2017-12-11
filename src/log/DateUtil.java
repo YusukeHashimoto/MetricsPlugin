@@ -10,15 +10,26 @@ public class DateUtil {
 		cal = Calendar.getInstance();
 		sb.append(cal.get(Calendar.YEAR));
 		sb.append('-');
-		sb.append(cal.get(Calendar.MONTH) + 1);
+
+		int month = cal.get(Calendar.MONTH) + 1;
+		sb.append(month < 10 ? "0" + month : month);
 		sb.append('-');
-		sb.append(cal.get(Calendar.DAY_OF_MONTH));
+
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		sb.append(day < 10 ? "0" + day : day);
 		sb.append('-');
-		sb.append(cal.get(Calendar.HOUR_OF_DAY));
+
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		sb.append(hour < 10 ? "0" + hour : hour);
 		sb.append('-');
-		sb.append(cal.get(Calendar.MINUTE));
+
+		int min = cal.get(Calendar.MINUTE);
+		sb.append(min < 10 ? "0" + min : min);
 		sb.append('-');
-		sb.append(cal.get(Calendar.SECOND));
+
+		int sec = cal.get(Calendar.SECOND);
+		sb.append(sec < 10 ? "0" + sec : sec);
+
 		return sb.toString();
 	}
 }

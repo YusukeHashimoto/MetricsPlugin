@@ -95,7 +95,7 @@ public class CodeAnalyzer {
 		for (ClassInfo c : visitor.classInfoSet()) {
 			// ClassInfo c = visitor.newClassInfo();
 			ci.put(c.getClassName(), c);
-			System.out.println(c.getClassName());
+			// System.out.println(c.getClassName());
 
 			PackageInfo pi = new PackageInfo(pathToPackage, ci);
 			System.out.println();
