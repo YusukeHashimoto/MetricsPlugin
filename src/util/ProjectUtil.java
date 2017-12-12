@@ -72,6 +72,10 @@ public class ProjectUtil {
 		IProject project = openedFile.getProject();
 		String projectName = project.toString().substring(1);
 
+		if(filename.indexOf(projectName) == -1) {
+			System.err.println("Cannot open file " + filename + " from project " + projectName);
+			return;
+		}
 		String relativePath = filename.substring(filename.indexOf(projectName));
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(relativePath));
 

@@ -24,6 +24,7 @@ public class LogManager {
 		StringBuilder sb = new StringBuilder();
 		for (ClassMetrics c : cm) {
 			sb.append(c.toJson());
+			sb.append('\n');
 		}
 		if (sb.toString().equals(latestLog(dir))) {
 			System.err.println("no need to write log");
@@ -60,6 +61,8 @@ public class LogManager {
 		pathToPackage = pathToPackage.substring(0, pathToPackage.length() - 1);
 
 		String dir = project.getFolder("log").getLocationURI().getPath() + "/" + pathToPackage;
+		if(dir.charAt(2) == ':') 
+			dir = dir.substring(1);
 		Path path = Paths.get(dir);
 		if (Files.notExists(path)) {
 			try {
