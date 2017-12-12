@@ -61,9 +61,21 @@ public class ClassInfo {
 	}
 
 	private void init() {
+		fieldVars = varDecls.stream()
+				.filter(v -> !(v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration))
+				.collect(Collectors.toSet());
+
 		extractRecievers();
 		localVars = new HashSet<>(varDecls);
 		localVars.removeAll(fieldVars);
+		
+		for(MethodDeclaration method : methodDeclarations) {
+			method.setProperty(MyVisitor.LOCAL_VARS, new ArrayList<VariableDeclarationFragment>());
+		}
+		
+		for(VariableDeclarationFragment var : localVars) {
+			((List<VariableDeclarationFragment>)(ASTUtil.parentMethodOf(var).getProperty(MyVisitor.LOCAL_VARS))).add(var);
+		}
 	}
 
 	private void extractRecievers() {

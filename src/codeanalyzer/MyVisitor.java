@@ -15,7 +15,8 @@ public class MyVisitor extends ASTVisitor {
 	public static final String DECLARED_LINE = "declared_line";
 	public static final String CYCLOMATIC_COMPLEXITY = "mccabe";
 	//static final String LOCAL_VARIABLE = "local";
-	static final String DEFINITION_PLACE = "def_place";
+	public static final String DEFINITION_PLACE = "def_place";
+	public static final String LOCAL_VARS = "local_vars";
 	private MyParser parser;
 	private int cyclomaticComplexity = 1;
 	private boolean isAbstract = false;
