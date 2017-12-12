@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.*;
 
-import codeanalizer.metrics.Metrics;
 import util.Log;
 import util.ProjectUtil;
 
@@ -85,7 +84,7 @@ public class ClassInfo {
 	public List<VariableDeclarationFragment> getVarDecls() {
 		return varDecls;
 	}
-
+	
 	public String getFileName() {
 		return fileName;
 	}
@@ -317,26 +316,6 @@ public class ClassInfo {
 		premitives.add("byte");
 		premitives.add("short");
 		premitives.add("boolean");
-	}
-
-	public Map<String, Object> getMetricsMap() {
-		Map<String, Object> metricsMap = new HashMap<>();
-		metricsMap.put(Metrics.WMC, weightedMethodsPerClass());
-		// ClassMetrics met = new ClassMetrics();
-		// met.classname = this.className;
-		// met.wmc = weightedMethodsPerClass();
-		// System.err.println(new Gson().toJson(met));
-
-		Map<String, Integer> ccMap = new HashMap<>();
-		for (MethodDeclaration method : methodDeclarations) {
-			// ccMap.put(method.toString(), (Integer)
-			// method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
-			ccMap.put(ASTUtil.methodNameOf(method), (Integer) method.getProperty(MyVisitor.CYCLOMATIC_COMPLEXITY));
-		}
-		metricsMap.put(Metrics.CYCLOMATIC_COMPLEXITY, ccMap);
-
-		// System.err.println(new Gson().toJson(this));
-		return metricsMap;
 	}
 }
 /*

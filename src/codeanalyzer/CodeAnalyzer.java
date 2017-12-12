@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.*;
 
-import log.JSONLog;
 import util.*;
 import warning.*;
 import warning.ckmetrics.WMCWarning;
@@ -155,8 +154,6 @@ public class CodeAnalyzer {
 			c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
 			warnings.addAll(warnings(c, pathToPackage + filename));
 			Log.info("}");
-
-			JSONLog.log(c);
 		}
 		genClassMetrics(visitor.classInfoSet());
 		Log.print(Log.ERROR);
