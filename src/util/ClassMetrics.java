@@ -2,6 +2,7 @@ package util;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 
@@ -30,6 +31,9 @@ public class ClassMetrics {
 		rfc = ci.responsesForClass().size();
 		dit = ci.depthOfInheritanceTree(allClass);
 		cbo = ci.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).size();
+		
+		methodList = ci.getMethodDeclarations().stream().map(m -> new MethodMetrics(m)).collect(Collectors.toList());
+		
 	}
 
 	public String toJson() {
