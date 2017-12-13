@@ -27,11 +27,11 @@ public class ClassMetrics {
 		filename = ci.getFileName();
 		wmc = ci.weightedMethodsPerClass();
 		noc = ci.numberOfChildren(allClass);
-		//lcom = ci.lackOfCohesionInMethods();
+		lcom = ci.lackOfCohesionInMethods();
 		rfc = ci.responsesForClass().size();
 		dit = ci.depthOfInheritanceTree(allClass);
 		cbo = ci.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).size();
-		
+
 		methodList = ci.getMethodDeclarations().stream().map(m -> new MethodMetrics(m)).collect(Collectors.toList());
 	}
 
