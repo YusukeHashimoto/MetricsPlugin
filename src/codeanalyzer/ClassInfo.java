@@ -68,13 +68,14 @@ public class ClassInfo {
 		extractRecievers();
 		localVars = new HashSet<>(varDecls);
 		localVars.removeAll(fieldVars);
-		
-		for(MethodDeclaration method : methodDeclarations) {
+
+		for (MethodDeclaration method : methodDeclarations) {
 			method.setProperty(MyVisitor.LOCAL_VARS, new ArrayList<VariableDeclarationFragment>());
 		}
-		
-		for(VariableDeclarationFragment var : localVars) {
-			((List<VariableDeclarationFragment>)(ASTUtil.parentMethodOf(var).getProperty(MyVisitor.LOCAL_VARS))).add(var);
+
+		for (VariableDeclarationFragment var : localVars) {
+			((List<VariableDeclarationFragment>) (ASTUtil.parentMethodOf(var).getProperty(MyVisitor.LOCAL_VARS)))
+					.add(var);
 		}
 	}
 
@@ -96,7 +97,7 @@ public class ClassInfo {
 	public List<VariableDeclarationFragment> getVarDecls() {
 		return varDecls;
 	}
-	
+
 	public String getFileName() {
 		return fileName;
 	}

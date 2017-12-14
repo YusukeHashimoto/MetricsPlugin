@@ -41,17 +41,45 @@ class ClassFactory {
 		
 		fun generateCohesionMap() {
 			val localVars: List<VariableDeclarationFragment> = variableList.filter{v -> !fieldVars.contains(v)}.toList();
+			/*
+			val parameters: MutableList<SingleVariableDeclaration> = mutableListOf()
+			for(method in methodList) {
+				for(param in method.parameters()) {
+					parameters.add(param as SingleVariableDeclaration)
+				}
+			}*/
 			
 			names.filter { node -> ASTUtil.parentMethodOf(node) != null}.forEach{
 				node ->
+				
+				val parameters: MutableList<SingleVariableDeclaration> = mutableListOf()
+				ASTUtil.parentMethodOf(node)?.parameters()?.forEach{p -> parameters.add(p as SingleVariableDeclaration)}
+				if(node.toString().equals("inputFileName")) {
+					//var x = 3
+				}
+				if(parameters.any{p -> p.toString().equals("inputFileName")} && node.toString().equals("inputFileName")){
+					var x = 3
+				}
+				
+				
+				
 				fieldVars.filter { v -> v.name.fullyQualifiedName.equals(node.fullyQualifiedName) && ASTUtil.definedClassOf(v).equals(ASTUtil.definedClassOf(node))}.forEach{
 						v ->
 				//v.filter { v ->
 					if(localVars.filter { lv -> lv.name.toString().equals(v.name.toString()) && ASTUtil.parentMethodOf(lv).equals(ASTUtil.parentMethodOf(v))}.any {
-						lv -> !ASTUtil.parentMethodOf(lv).toString().contains(".this")
-						
+						//lv -> !ASTUtil.parentMethodOf(lv).toString().contains(".this")
+						lv -> containCount(ASTUtil.parentMethodOf(lv).toString(), ".this") ==  containCount(ASTUtil.parentMethodOf(lv).toString(), "this")  
 					}) {
-						// do nothing
+						// v is local variable
+					} else if(node.parent is SingleVariableDeclaration || node.parent is FieldDeclaration) {
+						//System.out.println();
+					
+					} else if(parameters.filter { p -> p.name.toString().equals(v.name.toString()) && ASTUtil.parentMethodOf(p).equals(ASTUtil.parentMethodOf(node))}.any {
+						//p -> !ASTUtil.parentMethodOf(p).toString().contains(".this")
+						p -> containCount(ASTUtil.parentMethodOf(p).toString(), ".this") ==  containCount(ASTUtil.parentMethodOf(p).toString(), "this")  
+					}) {
+						// v is parameter
+						//System.out.println();
 					} else {
 						if(cohesionMap[v] == null)
 							cohesionMap.put(v, mutableSetOf())
@@ -133,4 +161,14 @@ class ClassFactory {
 	
 	fun toClassInfo(): List<ClassInfo> = classMap.map { it.value.toClassInfo() }
 
+}
+
+fun containCount(str: String, pattern: String): Int {
+	var s = str
+	var i = 0
+	while(s.contains(pattern)) {
+		i++
+		s = s.substring(s.indexOf(pattern) + 1)
+	}
+	return i
 }
