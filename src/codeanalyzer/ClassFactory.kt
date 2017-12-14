@@ -62,8 +62,10 @@ class ClassFactory {
 				}
 				
 				
-				
-				fieldVars.filter { v -> v.name.fullyQualifiedName.equals(node.fullyQualifiedName) && ASTUtil.definedClassOf(v).equals(ASTUtil.definedClassOf(node))}.forEach{
+				fieldVars.filter{v -> (v.parent as (FieldDeclaration)).modifiers.and(Modifier.STATIC) != Modifier.STATIC}
+	
+				//fieldVars.filter
+				.filter{ v -> v.name.fullyQualifiedName.equals(node.fullyQualifiedName) && ASTUtil.definedClassOf(v).equals(ASTUtil.definedClassOf(node))}.forEach{
 						v ->
 				//v.filter { v ->
 					if(localVars.filter { lv -> lv.name.toString().equals(v.name.toString()) && ASTUtil.parentMethodOf(lv).equals(ASTUtil.parentMethodOf(v))}.any {

@@ -1,6 +1,7 @@
 package codeanalyzer;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.dom.*;
@@ -197,6 +198,9 @@ public class ClassInfo {
 
 	public double lackOfCohesionInMethods() {
 		// System.out.println("\t class " + className);
+		Set<VariableDeclarationFragment> fieldVars = this.fieldVars.stream()
+				.filter(v -> (((FieldDeclaration) v.getParent()).getModifiers() & Modifier.STATIC) == 0)
+				.collect(Collectors.toSet());
 		double x = 0;
 		for (VariableDeclarationFragment var : fieldVars) {
 			Set<MethodDeclaration> set = cohesionMap.get(var);
@@ -211,10 +215,24 @@ public class ClassInfo {
 		if (fieldVars.isEmpty())
 			return 0;
 		x /= fieldVars.size();
-		x -= methodDeclarations.size();
-		x /= 1 - methodDeclarations.size();
+		// x -= methodDeclarations.size();
+		// x /= 1 - methodDeclarations.size();
+		x -= countActiveMethod();
+		x /= 1 - countActiveMethod();
 		System.err.println(className + " " + x);
 		return x;
+	}
+
+	private int countActiveMethod() {
+		int i = 0;
+		Set<MethodDeclaration> methods = new HashSet<MethodDeclaration>();
+		for (Entry<VariableDeclarationFragment, Set<MethodDeclaration>> e : cohesionMap.entrySet()) {
+			Set<MethodDeclaration> set = e.getValue();
+			for (MethodDeclaration m : set) {
+				methods.add(m);
+			}
+		}
+		return methods.size();
 	}
 
 	@Override
