@@ -90,7 +90,9 @@ public class ClassInfo {
 		}
 
 		recievers = methodInvocations.stream()
-				.map(m -> m.resolveMethodBinding().getDeclaringClass().getErasure().getQualifiedName())
+				//.filter(m -> m.resolveMethodBinding().getDeclaredReceiverType() != null)
+				//.map(m -> m.resolveMethodBinding().getDeclaredReceiverType().getErasure().getName())
+				.map(m -> m.resolveMethodBinding().getDeclaringClass().getErasure().getName())//.getQualifiedName())
 				.collect(Collectors.toSet());
 		recievers.stream().forEach(r -> Log.info("Reciever :" + r));
 	}
@@ -140,8 +142,14 @@ public class ClassInfo {
 		recievers.addAll(this.recievers);
 		parameters.stream().map(p -> p.getType().toString()).filter(p -> !premitives.contains(p))
 				.forEach(p -> recievers.add(p));
-		if (superclassName != null)
-			recievers.add(superclassName);
+		if (superclassName != null) {
+			if(!superclassName.contains("<"))
+				recievers.add(superclassName);
+			else {
+				//recievers.addAll(Arrays.asList(superclassName.split("<|>|,")));
+				recievers.add(superclassName.split("<")[0]);
+			}
+		}
 		exceptions.stream().map(e -> e.toString()).forEach(e -> recievers.add(e));
 
 		if (recievers != null && !recievers.isEmpty()) {
