@@ -8,7 +8,7 @@ public class InheritanceTreeHandler extends URLHandler {
 	
 	@Override
 	String generateURL(Map<String, ClassInfo> classMap) {
-		StringBuilder url = new StringBuilder("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/graphsample.html?");
+		StringBuilder url = new StringBuilder("file:///C:/Users/Hashimoto/GoogleDrive/MetricsGraph/inheritancetree.html?");
 		classMap.entrySet().stream().map(e -> e.getValue()).forEach(v -> url.append(v.toURLParameter() + '&'));
 		/*
 		for(Entry<String, ClassInfo> e : classMap.entrySet()) {
