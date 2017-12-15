@@ -34,4 +34,9 @@ public class LargeMethodWarning extends Warning {
 	public MetricsCategory getParent() {
 		return MetricsCategory.SIMPLE_METRICS;
 	}
+	
+	@Override
+	public int getPriority() {
+		return line * 2;
+	}
 }

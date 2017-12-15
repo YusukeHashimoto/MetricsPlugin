@@ -53,7 +53,14 @@ public class MetricsTreeView extends ViewPart {
 						"Sample");
 			}
 		});
-
+		viewer.setSorter(new ViewerSorter() {
+			@Override
+			public int category(Object element) {
+				if(element instanceof Warning)
+					return ((Warning)element).getPriority() * -1;
+				else return 0;
+			}
+		});
 		getSite().setSelectionProvider(viewer);
 
 		makeActions();

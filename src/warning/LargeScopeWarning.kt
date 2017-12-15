@@ -8,7 +8,7 @@ import metricsplugin.views.metricstreeview.MetricsCategory;
 import codeanalyzer.ASTUtil
 
 public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename: String?, lifeSpan: Int?) : Warning(unit, node, filename) {
-	val lifeSpan = lifeSpan
+	val lifeSpan: Int? = lifeSpan
 
 	override fun getMessage(): String {
 		return "ローカル変数の寿命が長い(" + lifeSpan + ") " + node.toString();
@@ -21,4 +21,6 @@ public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename:
 	override fun getParent(): MetricsCategory {
 		return MetricsCategory.SIMPLE_METRICS;
 	}
+	
+	override fun getPriority() = lifeSpan!!.div(2)
 }

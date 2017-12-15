@@ -19,4 +19,9 @@ public class NOCWarning extends CKMetricsWarning {
 	public String getMessage() {
 		return "NOCが大きい(" + value + "): " + ASTUtil.definedClassOf(getNode()).getName().getFullyQualifiedName();
 	}
+	
+	@Override
+	public int getPriority() {
+		return value * 2;
+	}
 }

@@ -19,4 +19,9 @@ public class CBOWarning extends CKMetricsWarning {
 	public String getMessage() {
 		return "CBOが大きい(" + value + "): " + ASTUtil.definedClassOf(getNode()).getName().getFullyQualifiedName();
 	}
+	
+	@Override
+	public int getPriority() {
+		return value / 2;
+	}
 }

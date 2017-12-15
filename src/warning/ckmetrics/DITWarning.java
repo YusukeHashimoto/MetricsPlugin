@@ -19,4 +19,9 @@ public class DITWarning extends CKMetricsWarning {
 	public String getMessage() {
 		return "DITが大きい(" + value + "): " + ASTUtil.definedClassOf(getNode()).getName().getFullyQualifiedName();
 	}
+	
+	@Override
+	public int getPriority() {
+		return value;
+	}
 }

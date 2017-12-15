@@ -19,4 +19,9 @@ public class LCOMWarning extends CKMetricsWarning {
 	public String getMessage() {
 		return "LCOMが大きい(" + value + "): " + ASTUtil.definedClassOf(getNode()).getName().getFullyQualifiedName();
 	}
+	
+	@Override
+	public int getPriority() {
+		return value;
+	}
 }

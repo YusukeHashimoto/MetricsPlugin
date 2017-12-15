@@ -11,7 +11,7 @@ import metricsplugin.views.metricstreeview.MetricsCategory;
 import metricsplugin.views.metricstreeview.Node;
 import warning.suggestion.Suggestion;
 
-public abstract class Warning implements Node<MetricsCategory, Suggestion> {
+public abstract class Warning implements Node<MetricsCategory, Suggestion>, Comparable<Warning> {
 	private String filename;
 	protected ASTNode node;
 	// protected String message;
@@ -71,5 +71,12 @@ public abstract class Warning implements Node<MetricsCategory, Suggestion> {
 	@Override
 	public String getLabel() {
 		return getMessage();
+	}
+	
+	public abstract int getPriority();
+	
+	@Override
+	public int compareTo(Warning other) {
+		return getPriority() - other.getPriority();
 	}
 }

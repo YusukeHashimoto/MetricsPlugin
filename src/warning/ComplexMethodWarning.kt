@@ -21,4 +21,6 @@ class ComplexMethodWarning(unit: CompilationUnit?, node: ASTNode?, filename: Str
 	override fun getParent(): MetricsCategory {
 		return MetricsCategory.SIMPLE_METRICS;
 	}
+	
+	override fun getPriority() = cyclomaticComplexity
 }

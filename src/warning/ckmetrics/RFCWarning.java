@@ -19,4 +19,9 @@ public class RFCWarning extends CKMetricsWarning {
 	public String getMessage() {
 		return "RFCが大きい(" + value + "): " + ASTUtil.definedClassOf(getNode()).getName().getFullyQualifiedName();
 	}
+	
+	@Override
+	public int getPriority() {
+		return value / 2;
+	}
 }
