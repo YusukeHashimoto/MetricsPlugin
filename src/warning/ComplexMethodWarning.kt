@@ -15,7 +15,7 @@ class ComplexMethodWarning(unit: CompilationUnit?, node: ASTNode?, filename: Str
 	}
 	
 	override fun suggestions(): List<Suggestion> {
-		return arrayListOf(ExtractConditionsSuggestion(this), SplitMethodSuggestion(this))
+		return arrayListOf(ExtractConditionsSuggestion(this), SplitMethodSuggestion(this), UsePolymorphismSuggestion(this))
 	}
 	
 	override fun getParent(): MetricsCategory {

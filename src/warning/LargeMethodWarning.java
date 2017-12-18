@@ -7,8 +7,7 @@ import org.eclipse.jdt.core.dom.*;
 
 import codeanalyzer.ASTUtil;
 import metricsplugin.views.metricstreeview.MetricsCategory;
-import warning.suggestion.SplitMethodSuggestion;
-import warning.suggestion.Suggestion;
+import warning.suggestion.*;
 
 public class LargeMethodWarning extends Warning {
 	private int line;
@@ -27,6 +26,7 @@ public class LargeMethodWarning extends Warning {
 	public List<Suggestion> suggestions() {
 		List<Suggestion> suggestions = new ArrayList<>();
 		suggestions.add(new SplitMethodSuggestion(this));
+		suggestions.add(new ExtractConditionsSuggestion(this));
 		return suggestions;
 	}
 

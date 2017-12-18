@@ -15,7 +15,7 @@ public class LargeScopeWarning(unit: CompilationUnit?, node: ASTNode?, filename:
 	}
 	
 	override fun suggestions(): List<Suggestion> {
-		return arrayListOf(InliningVariableSuggestion(this))
+		return arrayListOf(InliningVariableSuggestion(this), SplitMethodSuggestion(this))
 	}
 	
 	override fun getParent(): MetricsCategory {
