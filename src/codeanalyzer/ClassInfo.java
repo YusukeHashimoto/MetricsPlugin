@@ -136,6 +136,10 @@ public class ClassInfo {
 	public void addSubclass(ClassInfo subclass) {
 		subclasses.add(subclass);
 	}
+	
+	public Set<String> efficientCouplings() {
+		return efficientCouplings(COUPLING_LEVEL_CLASS);
+	}
 
 	public Set<String> efficientCouplings(int couplingLevel) {
 		Set<String> recievers = new HashSet<String>();
@@ -230,6 +234,10 @@ public class ClassInfo {
 		if(Double.isNaN(x) || x <= 0) {
 			x = 0;
 		}
+		
+		int y = (int)(x * 100);
+		x = y / 100.0;
+		
 		System.err.println(className + " " + x);
 		return x;
 	}

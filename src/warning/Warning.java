@@ -1,6 +1,5 @@
 package warning;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -64,9 +63,7 @@ public abstract class Warning implements Node<MetricsCategory, Suggestion>, Comp
 		return unit;
 	}
 
-	public List<Suggestion> suggestions() {
-		return new ArrayList<>();
-	}
+	public abstract List<Suggestion> suggestions();
 
 	@Override
 	public String getLabel() {

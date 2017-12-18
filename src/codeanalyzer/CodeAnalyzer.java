@@ -11,7 +11,7 @@ import org.eclipse.jdt.core.dom.*;
 
 import util.*;
 import warning.*;
-import warning.ckmetrics.WMCWarning;
+import warning.ckmetrics.*;
 
 public class CodeAnalyzer {
 	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
@@ -131,10 +131,10 @@ public class CodeAnalyzer {
 
 		for (ClassInfo c : visitor.classInfoSet()) {
 			ci.put(c.getClassName(), c);
-			Log.info("packages used from " + pathToPackage + filename + " {");
-			c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
-			warnings.addAll(warnings(c, pathToPackage + filename));
-			Log.info("}");
+			//Log.info("packages used from " + pathToPackage + filename + " {");
+			//c.efficientCouplings(ClassInfo.COUPLING_LEVEL_CLASS).stream().forEach(p -> Log.info("\t" + p));
+			warnings.addAll(warnings(c, pathToPackage + filename, visitor.classInfoSet()));
+			//Log.info("}");
 		}
 		genClassMetrics(visitor.classInfoSet());
 	}
@@ -169,7 +169,7 @@ public class CodeAnalyzer {
 		}
 	}
 
-	private List<Warning> warnings(ClassInfo ci, String filename) {
+	private List<Warning> warnings(ClassInfo ci, String filename, Set<ClassInfo> ciset) {
 		List<Warning> warnings = new ArrayList<Warning>();
 
 		ci.getMethodDeclarations().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
@@ -189,6 +189,26 @@ public class CodeAnalyzer {
 
 		if (ci.weightedMethodsPerClass() > Threshold.WEIGHTED_METHOD_PER_CLASS) {
 			warnings.add(new WMCWarning(null, ci.getMethodDeclarations(), filename, ci.weightedMethodsPerClass()));
+		}
+		
+		if(ci.lackOfCohesionInMethods() > Threshold.LACK_OF_COHESION) {
+			warnings.add(new LCOMWarning(null, ci.getMethodDeclarations(), filename, ci.lackOfCohesionInMethods()));
+		}
+		
+		if(ci.efficientCouplings().size() > Threshold.COUPLING_BETWEEN_OBJECTS) {
+			warnings.add(new CBOWarning(null, ci.getMethodDeclarations(), filename, ci.efficientCouplings().size()));
+		}
+		
+		if(ci.depthOfInheritanceTree(ciset) > Threshold.DEPTH_OF_INHERITANCE_TREE) {
+			warnings.add(new DITWarning(null, ci.getMethodDeclarations(), filename, ci.depthOfInheritanceTree(ciset)));
+		}
+		
+		if(ci.numberOfChildren(ciset) > Threshold.NUMBER_OF_CHILDREN) {
+			warnings.add(new NOCWarning(null, ci.getMethodDeclarations(), filename, ci.numberOfChildren(ciset)));
+		}
+		
+		if(ci.responsesForClass().size() > Threshold.RESPONSE_FOR_CLASS) {
+			warnings.add(new RFCWarning(null, ci.getMethodDeclarations(), filename, ci.responsesForClass().size()));
 		}
 		return warnings;
 	}
