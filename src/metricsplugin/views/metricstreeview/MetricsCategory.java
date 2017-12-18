@@ -42,7 +42,7 @@ public enum MetricsCategory implements Node<Object, Warning> {
 
 	@Override
 	public String getLabel() {
-		return label;
+		return label + " (" + warnings.size() + ")";
 	}
 
 	private String label;
