@@ -227,6 +227,9 @@ public class ClassInfo {
 		// x /= 1 - methodDeclarations.size();
 		x -= countActiveMethod();
 		x /= 1 - countActiveMethod();
+		if(Double.isNaN(x) || x <= 0) {
+			x = 0;
+		}
 		System.err.println(className + " " + x);
 		return x;
 	}

@@ -23,6 +23,7 @@ public class MyParser {
 	int lifeSpanOf(VariableDeclarationFragment variable) {
 		int start = variable.getStartPosition();
 		for(int i = 0, open = 0, close = 0, lines = 0; i < code.length(); i++) {
+			try {
 			switch(code.charAt(start + i)) {
 			case '{':
 				open++;
@@ -35,6 +36,9 @@ public class MyParser {
 				break;
 			}
 			if(close > open) return lines;
+			} catch(StringIndexOutOfBoundsException e) {
+				return -1;
+			}
 		}
 		return -1;
 	}
