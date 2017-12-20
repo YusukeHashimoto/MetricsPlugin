@@ -14,10 +14,6 @@ import warning.*;
 import warning.ckmetrics.*;
 
 public class CodeAnalyzer {
-	private static final int THRESHOLD_OF_LINE_COUNT_OF_METHOD = 10;
-	private static final int THRESHOLD_OF_CYCLOMATIC_CONPLEXITY = 10;
-	private static final int THRESHOLD_OF_LIFE_SPAN = 15;
-
 	private double abstractness = 0;
 	private List<Warning> warnings = new ArrayList<>();
 	private Map<String, ClassInfo> ci = new HashMap<>();
@@ -172,18 +168,18 @@ public class CodeAnalyzer {
 	private List<Warning> warnings(ClassInfo ci, String filename, Set<ClassInfo> ciset) {
 		List<Warning> warnings = new ArrayList<Warning>();
 
-		ci.getMethodDeclarations().stream().filter(m -> lineCountOf(m) > THRESHOLD_OF_LINE_COUNT_OF_METHOD)
+		ci.getMethodDeclarations().stream().filter(m -> lineCountOf(m) > Threshold.LOC_OF_METHOD)
 				.sorted(comparing(CodeAnalyzer::lineCountOf).reversed())
 				.forEach(node -> warnings.add(new LargeMethodWarning(null, node, filename, lineCountOf(node))));
 
-		ci.getMethodDeclarations().stream().filter(m -> cyclomaticComplexityOf(m) > THRESHOLD_OF_CYCLOMATIC_CONPLEXITY)
+		ci.getMethodDeclarations().stream().filter(m -> cyclomaticComplexityOf(m) > Threshold.CYCLOMATIC_COMPLEXITY)
 
 				.sorted(comparing(CodeAnalyzer::cyclomaticComplexityOf).reversed()).forEach(node -> warnings
 						.add(new ComplexMethodWarning(null, node, filename, cyclomaticComplexityOf(node))));
 
 		ci.getVarDecls().stream()
 				.filter(v -> (v.getProperty(MyVisitor.DEFINITION_PLACE) instanceof MethodDeclaration)
-						&& lifeSpanOf(v) > THRESHOLD_OF_LIFE_SPAN)
+						&& lifeSpanOf(v) > Threshold.SCOPE_OF_LOCAL_VARIABLE)
 				.sorted(comparing(CodeAnalyzer::lifeSpanOf).reversed())
 				.forEach(node -> warnings.add(new LargeScopeWarning(null, node, filename, lifeSpanOf(node))));
 
@@ -210,6 +206,7 @@ public class CodeAnalyzer {
 		if(ci.responsesForClass().size() > Threshold.RESPONSE_FOR_CLASS) {
 			warnings.add(new RFCWarning(null, ci.getMethodDeclarations(), filename, ci.responsesForClass().size()));
 		}
+
 		return warnings;
 	}
 
