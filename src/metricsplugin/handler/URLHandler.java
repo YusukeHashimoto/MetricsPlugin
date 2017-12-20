@@ -6,6 +6,7 @@ import org.eclipse.core.commands.*;
 
 import codeanalyzer.ClassInfo;
 import codeanalyzer.CodeAnalyzer;
+import log.OpeLog;
 import metricsplugin.views.WebViewer;
 import util.ProjectUtil;
 
@@ -19,6 +20,11 @@ abstract class URLHandler extends AbstractHandler {
 		} catch(ClassCastException e) {
 			
 		}
+		
+		String message = "showed ";
+		message += this instanceof InheritanceTreeHandler ? "Inheritance tree" : "Dependence graph";
+		OpeLog.getInstance().log(message);
+		
 		return null;
 	}
 	

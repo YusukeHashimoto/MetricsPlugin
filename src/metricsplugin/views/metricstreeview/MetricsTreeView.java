@@ -14,6 +14,7 @@ import org.eclipse.ui.part.ViewPart;
 import codeanalyzer.ClassInfo;
 import codeanalyzer.CodeAnalyzer;
 import log.LogManager;
+import log.OpeLog;
 import metricsplugin.views.WebViewer;
 import util.ClassMetrics;
 import util.ProjectUtil;
@@ -27,6 +28,7 @@ public class MetricsTreeView extends ViewPart {
 	private Action action2;
 
 	private LogManager lm;
+	private OpeLog opelog = OpeLog.getInstance();
 	private Map<String, ClassInfo> ci;
 
 	@Override
@@ -46,6 +48,7 @@ public class MetricsTreeView extends ViewPart {
 			Object obj = ((IStructuredSelection) selection).getFirstElement();
 			if (obj instanceof Warning) {
 				Warning warning = (Warning) obj;
+				opelog.log("double clicked " + warning.getMessage());
 				ProjectUtil.openInEditor(warning.getFilename());
 				ProjectUtil.markPosition(warning.getNode() != null ? warning.getNode().getStartPosition() : 0);
 			} else if (obj instanceof Suggestion) {
@@ -68,6 +71,7 @@ public class MetricsTreeView extends ViewPart {
 		contributeToActionBars();
 
 		lm = new log.LogManager();
+		opelog.log("generated tree view");
 	}
 
 	@Override
@@ -132,6 +136,7 @@ public class MetricsTreeView extends ViewPart {
 			public void run() {
 				// showMessage("Refresh!");
 				refresh();
+				opelog.log("clicked refresh button");
 			}
 		};
 		action1.setText("Refresh");
