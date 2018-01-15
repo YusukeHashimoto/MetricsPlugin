@@ -24,6 +24,7 @@ public class OpeLog {
 	}
 	
 	public void log(String message) {
+		dir = assureDirectory() + FILENAME;
 		String line = DateUtil.currentTimeInString2() + " " + message;
 		
 		try {
